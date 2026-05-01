@@ -1,0 +1,1215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Financial Planning Tool</title>
+<meta name="description" content="Single-file browser-based financial planning model with monthly cash flow, annual tax, offset, property, retirement, pension and stress-test views.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b57d0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Financial Planner">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./assets/icon-192.png">
+<style>
+:root{--bg:#f6f7f9;--panel:#ffffff;--ink:#17202a;--muted:#667085;--line:#d9dee7;--accent:#1f4e79;--accent2:#eef5fb;--warn:#9a3412;--bad:#b42318;--good:#067647;--soft:#f2f4f7;--shadow:0 6px 16px rgba(16,24,40,.07);--font-size:15.5px;--content-max:1680px}
+*{box-sizing:border-box}html{font-size:var(--font-size);-webkit-text-size-adjust:100%}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI","Segoe UI Variable Text",Arial,sans-serif;font-size:var(--font-size);line-height:1.38;letter-spacing:-0.3px;font-stretch:normal}header{background:#fff;border-bottom:1px solid var(--line);padding:10px 16px;position:sticky;top:0;z-index:10}h1{font-size:1.38rem;margin:0 0 2px}h2{font-size:1.12rem;margin:0 0 8px}h3{font-size:1rem;margin:0 0 7px}.sub{color:var(--muted);max-width:1120px;font-size:.92rem}.wrap{max-width:var(--content-max);margin:0 auto;padding:10px 14px 28px}.toolbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:8px}.toolbar label{display:flex;gap:6px;align-items:center}.toolbar select{min-height:34px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:#fff}.fontControls{display:flex;gap:5px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:3px 5px;background:#fff}.fontControls span{color:var(--muted);font-size:.86rem}.grid{display:grid;gap:10px}.two{grid-template-columns:minmax(270px,340px) minmax(0,1fr);align-items:start}.two > *,main,aside,section,.panel,#view{min-width:0;max-width:100%}.cards{grid-template-columns:repeat(4,minmax(145px,1fr))}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px;box-shadow:var(--shadow)}.kpi{padding:10px;border-radius:10px;background:var(--accent2);border:1px solid #c8dcec;min-width:0}.kpi .label{font-size:.83rem;color:var(--muted)}.kpi .val{font-size:1.28rem;font-weight:700;margin-top:2px;overflow-wrap:anywhere}.kpi .note{font-size:.82rem;color:var(--muted);margin-top:1px}.controls{display:grid;gap:8px}.group{border-top:1px solid var(--line);padding-top:8px}.group:first-child{border-top:0;padding-top:0}.field{display:grid;grid-template-columns:1fr 120px;gap:8px;align-items:center;margin:5px 0}.field label{color:#344054}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px 8px;background:#fff;color:var(--ink);min-height:34px;font:inherit;letter-spacing:inherit}button,.btn{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;padding:7px 10px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:34px;font:inherit;letter-spacing:inherit}button.secondary,.btn.secondary{background:#fff;color:var(--accent)}button.ghost{border-color:var(--line);background:#fff;color:var(--ink)}button:disabled{opacity:.5;cursor:not-allowed}details{border:1px solid var(--line);border-radius:10px;background:#fff;margin:7px 0}summary{cursor:pointer;padding:9px 10px;font-weight:650;color:#1d2939}details .inside{padding:0 10px 10px}.tablewrap{width:100%;max-width:100%;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff;max-height:520px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}table{border-collapse:collapse;width:max-content;min-width:100%;font-size:.84rem;table-layout:auto}th,td{border-bottom:1px solid #eaecf0;padding:5px 7px;text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:1;box-shadow:1px 0 0 #eaecf0}th{background:#f8fafc;color:#344054;font-weight:650;position:sticky;top:0;z-index:2}.badge{display:inline-block;border-radius:999px;padding:2px 7px;font-size:.8rem;border:1px solid var(--line);background:#fff}.badge.good{color:var(--good);border-color:#abefc6;background:#ecfdf3}.badge.bad{color:var(--bad);border-color:#fecdca;background:#fef3f2}.badge.warn{color:var(--warn);border-color:#fedf89;background:#fffaeb}.warnbox{border:1px solid #fedf89;background:#fffaeb;color:#7a2e0e;border-radius:10px;padding:9px;margin:7px 0}.foot{color:var(--muted);font-size:.85rem;margin-top:10px}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.tab{border:1px solid var(--line);background:#fff;color:#344054;padding:7px 9px}.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}.chart{width:100%;height:250px;border:1px solid var(--line);border-radius:10px;background:#fff}svg text{font-family:inherit;letter-spacing:inherit}.small{font-size:.84rem;color:var(--muted)}.right{margin-left:auto}.stressHeader{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.stress-grid{display:grid;grid-template-columns:repeat(3,minmax(145px,1fr));gap:8px;margin-top:8px}.stressField{display:grid;gap:4px}.stressLabelRow{display:flex;align-items:center;justify-content:space-between;gap:6px}.stressField label{color:#344054;font-size:.85rem}.stressField .helpButton{width:26px;min-width:26px;height:26px;min-height:26px;font-size:.85rem}.stressField .helpText{width:min(310px,calc(100vw - 42px))}.stressField input,.stressField select{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px 8px;background:#fff;min-height:34px;font:inherit}.impact-grid{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:8px;margin-top:8px}.impact-card{border:1px solid var(--line);border-radius:10px;padding:9px;background:#fff}.impact-card .label{font-size:.8rem;color:var(--muted)}.impact-card .value{font-size:1.08rem;font-weight:700;margin-top:2px}.impact-card .delta{font-size:.84rem;margin-top:2px}.delta.negative{color:var(--bad)}.delta.positive{color:var(--good)}.phoneHint{display:none}.srOnly{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.inputTools{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.inputTools button{min-height:31px;padding:6px 8px}.inputAccordion{gap:7px}.inputGroup{padding-top:0;border:1px solid var(--line);border-radius:10px;background:#fff;margin:0;overflow:visible}.inputGroup summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;font-weight:700;color:#1d2939;list-style:none}.inputGroup summary::-webkit-details-marker{display:none}.inputGroup summary::after{content:"Open";font-size:.76rem;font-weight:600;color:var(--accent);border:1px solid #c8dcec;background:var(--accent2);border-radius:999px;padding:2px 7px;white-space:nowrap}.inputGroup[open] summary::after{content:"Close"}.groupMeta{font-size:.78rem;font-weight:500;color:var(--muted);margin-left:auto}.summarySection{margin:0 0 10px}.summarySection h3{margin:0 0 6px}.summaryGrid{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:8px}.summaryCard{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px}.summaryCard .label{font-size:.8rem;color:var(--muted)}.summaryCard .value{font-size:1.12rem;font-weight:750;margin-top:2px}.summaryCard .note{font-size:.8rem;color:var(--muted);margin-top:2px}.coverageNote{border:1px solid #c8dcec;background:var(--accent2);border-radius:10px;padding:9px;margin:8px 0;color:#1d2939}.summarySection .tablewrap{max-height:330px}.tableGroup{margin-top:10px}.tableGroup:first-child{margin-top:0}.tableIntro{font-size:.83rem;color:var(--muted);margin:0 0 6px}.inputMatrix{display:grid;gap:4px}.matrixHeader,.matrixRow{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(105px,.82fr) 30px;gap:7px;align-items:center}.matrixHeader{font-size:.76rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.02em;border-bottom:1px solid var(--line);padding:0 0 5px}.matrixRow{padding:4px 0;border-bottom:1px solid #f0f2f5}.matrixRow:last-child{border-bottom:0}.matrixLabel{color:#344054;font-weight:560;font-size:.88rem;line-height:1.25}.matrixControl input,.matrixControl select{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px 8px;background:#fff;color:var(--ink);min-height:34px;font:inherit;letter-spacing:inherit}.tooltipWrap{position:relative;display:flex;justify-content:flex-end;align-items:center}.helpButton{width:28px;min-width:28px;min-height:28px;height:28px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--accent);font-weight:800;padding:0;line-height:1;box-shadow:none}.helpButton:hover,.helpButton:focus{border-color:var(--accent);outline:2px solid #c8dcec;outline-offset:1px}.helpText{position:absolute;right:0;top:calc(100% + 6px);width:min(330px,calc(100vw - 36px));padding:9px 10px;background:#17202a;color:#fff;border-radius:9px;box-shadow:0 12px 26px rgba(16,24,40,.24);font-size:.86rem;line-height:1.32;z-index:100;white-space:normal;text-align:left;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .12s ease,transform .12s ease}.helpText strong{display:block;margin-bottom:3px;color:#fff}.tooltipWrap:hover .helpText,.tooltipWrap:focus-within .helpText{opacity:1;pointer-events:auto;transform:translateY(0)}.unitHint{display:block;color:var(--muted);font-size:.78rem;margin-top:1px}.matrixCalc{margin-top:4px;color:var(--muted);font-size:.78rem;line-height:1.25}.matrixCalc strong{color:#344054;font-weight:700}.cashDebtChart{height:260px;margin-bottom:8px}.chart+.chart{margin-top:8px}.chartEvent{fill:#7a2e0e;font-size:.72rem;font-weight:650}.chartLegendText{font-size:.78rem;fill:#344054}.chartLegendLabel{font-size:.78rem;fill:#344054}.chartLegendBox{fill:#fff;stroke:#d0d5dd;stroke-width:1;opacity:.94}.chartDataPoint{fill:#fff;stroke-width:2;cursor:crosshair}.chartHoverBand rect{fill:transparent;pointer-events:all}.chartHoverLine{stroke:#475467;stroke-width:1;stroke-dasharray:3 3;opacity:0;pointer-events:none}.chartHoverBand:hover .chartHoverLine,.chartHoverBand:focus .chartHoverLine{opacity:.75}.chartHoverDot{fill:#17202a;opacity:0;pointer-events:none}.chartHoverBand:hover .chartHoverDot,.chartHoverBand:focus .chartHoverDot{opacity:.9}.chartTitle{font-size:14px;font-weight:700;fill:#17202a}.chart{position:relative;overflow:visible}.chartTooltip{position:absolute;display:none;z-index:30;max-width:270px;padding:8px 10px;background:#17202a;color:#fff;border-radius:8px;box-shadow:0 12px 26px rgba(16,24,40,.24);font-size:.82rem;line-height:1.3;white-space:pre-line;pointer-events:none;text-align:left}.chartTooltip.visible{display:block}.chartHoverBand{cursor:crosshair;outline:none}.chartHoverBand:focus{outline:none}.chartHoverBand:focus rect{stroke:#1f4e79;stroke-width:1;stroke-dasharray:3 3}.chartTooltipHint{fill:#667085;font-size:.72rem}
+@media(max-width:1180px){.two{grid-template-columns:minmax(250px,320px) minmax(0,1fr)}.cards,.summaryGrid{grid-template-columns:repeat(2,minmax(140px,1fr))}.stress-grid{grid-template-columns:repeat(2,minmax(140px,1fr))}.impact-grid{grid-template-columns:repeat(2,minmax(140px,1fr))}}@media(max-width:860px){.two{grid-template-columns:1fr}.cards,.summaryGrid,.stress-grid,.impact-grid{grid-template-columns:1fr}.field{grid-template-columns:1fr}.panel{padding:10px}.chart{height:220px}.tablewrap{max-height:55vh}.phoneHint{display:block;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;margin:8px 0;color:var(--muted)}}@media(max-width:700px){header{position:static;padding:10px 12px calc(10px + env(safe-area-inset-top,0px))}h1{font-size:1.22rem}.sub{font-size:.88rem}.wrap{padding:8px 8px 24px}.toolbar{display:grid;grid-template-columns:1fr;align-items:stretch}.toolbar label,.fontControls,button,.btn{width:100%}.toolbar label{justify-content:space-between}.fontControls{justify-content:space-between}.kpi .val{font-size:1.18rem}.tabs{display:grid;grid-template-columns:1fr 1fr}.tab{width:100%;min-height:38px}.tablewrap{max-height:60vh}table{font-size:.8rem}th,td{padding:5px 6px}.matrixHeader{display:none}.matrixRow{grid-template-columns:1fr 92px 30px;gap:6px}.helpText{position:fixed;left:12px;right:12px;top:auto;bottom:14px;width:auto;max-width:none;z-index:1000}.stressLabelRow{align-items:flex-start}.stressField .helpText{width:auto}}
+
+
+/* Material-inspired layout polish and larger default presentation */
+:root{
+  --bg:#f8fafd;
+  --panel:#ffffff;
+  --ink:#1f2937;
+  --muted:#5f6b7a;
+  --line:#d9dee7;
+  --accent:#0b57d0;
+  --accent2:#e8f0fe;
+  --soft:#f3f6fb;
+  --shadow:0 1px 2px rgba(16,24,40,.08),0 6px 18px rgba(16,24,40,.08);
+  --shadow-soft:0 1px 2px rgba(16,24,40,.06),0 2px 8px rgba(16,24,40,.05);
+}
+body{line-height:1.45;background:var(--bg)}
+header{padding:14px 20px;background:#fff;box-shadow:0 1px 3px rgba(16,24,40,.10);border-bottom:0}
+h1{font-size:1.55rem;letter-spacing:-0.45px;font-weight:760}
+h2{font-size:1.25rem;letter-spacing:-0.25px;font-weight:740;margin-bottom:10px}
+h3{font-size:1.06rem;font-weight:720}
+.sub{font-size:.98rem;line-height:1.42;color:var(--muted)}
+.wrap{padding:14px 16px 32px;max-width:var(--content-max)}
+.grid{gap:14px}.two{grid-template-columns:minmax(320px,380px) minmax(0,1fr);gap:14px}.cards{gap:12px}.panel{border:1px solid rgba(15,23,42,.08);border-radius:18px;padding:16px;background:var(--panel);box-shadow:var(--shadow-soft)}
+.kpi,.summaryCard,.impact-card{border-radius:16px;border-color:rgba(15,23,42,.08);box-shadow:var(--shadow-soft)}
+.kpi{padding:14px;background:linear-gradient(180deg,#eef5ff,#ffffff)}.kpi .label{font-size:.9rem}.kpi .val{font-size:1.45rem}.kpi .note{font-size:.88rem}
+button,.btn{min-height:40px;border-radius:999px;padding:8px 14px;font-weight:650;box-shadow:none;transition:background-color .12s ease,border-color .12s ease,box-shadow .12s ease,transform .06s ease}
+button:hover,.btn:hover{box-shadow:0 2px 6px rgba(11,87,208,.18)}button:active,.btn:active{transform:translateY(1px)}button.secondary,.btn.secondary,button.ghost{background:#fff;border-color:#cfd7e6}.toolbar{gap:8px;margin-top:10px}.toolbar select,.field input,.field select,.matrixControl input,.matrixControl select,.stressField input,.stressField select{min-height:40px;border-radius:12px;border-color:#cfd7e6;background:#fff;font-size:1rem}.fontControls{border-radius:999px;min-height:40px;padding:4px 6px;background:#fff;box-shadow:var(--shadow-soft)}
+.tabs{gap:8px;margin:12px 0}.tab{border-radius:999px;min-height:40px;padding:8px 14px;font-size:.95rem;font-weight:650;background:#fff}.tab.active{background:var(--accent);box-shadow:0 2px 8px rgba(11,87,208,.22)}
+.inputTools{gap:8px}.inputTools button{min-height:36px}.inputGroup{border-radius:16px;border-color:rgba(15,23,42,.10);box-shadow:var(--shadow-soft);overflow:visible}.inputGroup summary{min-height:46px;padding:11px 13px;font-size:1rem}.inputGroup summary::after{padding:4px 10px;border-radius:999px;background:var(--accent2);font-size:.82rem}.matrixRow{padding:7px 0}.matrixLabel{font-size:.94rem}.matrixHeader{font-size:.81rem}.unitHint,.matrixCalc{font-size:.83rem}.helpButton{width:30px;min-width:30px;height:30px;min-height:30px}.helpText{font-size:.91rem;border-radius:12px;padding:10px 12px}
+.tablewrap{border-radius:16px;border-color:rgba(15,23,42,.10);box-shadow:var(--shadow-soft);overflow:auto;max-width:100%}table{font-size:.9rem}th,td{padding:7px 9px}th{background:#f7f9fc;font-weight:700}.tableIntro,.small{font-size:.9rem}.badge{font-size:.86rem;padding:3px 8px}.warnbox,.coverageNote{border-radius:14px;padding:12px}
+.dashboardChartStack{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;width:100%;max-width:100%;min-width:0}.dashboardChartStack .chart{width:100%;max-width:100%;min-width:0;height:320px}.chart{height:320px;border-radius:18px;border:1px solid rgba(15,23,42,.10);background:#fff;box-shadow:var(--shadow-soft);overflow:hidden}.cashDebtChart,.netWorthChart{height:320px}.chart svg{display:block;width:100%;height:100%}.chartTitle{font-size:16px;font-weight:760;fill:#1f2937}.chartEvent{font-size:.80rem;font-weight:700}.chartLegendLabel,.chartLegendText{font-size:.90rem}.chartLegendBox{rx:10;ry:10;filter:drop-shadow(0 2px 4px rgba(16,24,40,.12))}.chartTooltip{font-size:.93rem;line-height:1.4;border-radius:12px;padding:10px 12px;max-width:300px}.chartDataPoint{stroke-width:2.4}.chartHoverDot{r:5}
+.summaryGrid,.impact-grid{gap:12px}.summaryCard{padding:12px}.summaryCard .label,.impact-card .label{font-size:.88rem}.summaryCard .value{font-size:1.24rem}.impact-card .value{font-size:1.18rem}.stress-grid{gap:12px}.stressField label{font-size:.92rem}
+@media(max-width:1180px){.two{grid-template-columns:minmax(300px,360px) minmax(0,1fr)}}
+@media(max-width:860px){.two{grid-template-columns:1fr}.dashboardChartStack .chart,.chart,.cashDebtChart,.netWorthChart{height:280px}.panel{padding:14px}.wrap{padding:12px}.cards,.summaryGrid,.stress-grid,.impact-grid{grid-template-columns:1fr}.tablewrap{max-height:58vh}}
+@media(max-width:700px){header{padding:12px 12px calc(12px + env(safe-area-inset-top,0px))}.wrap{padding:10px 8px 28px}h1{font-size:1.34rem}.sub{font-size:.94rem}.dashboardChartStack .chart,.chart,.cashDebtChart,.netWorthChart{height:260px}.tabs{grid-template-columns:1fr 1fr}.tab{min-height:42px}.toolbar{gap:8px}.matrixRow{grid-template-columns:1fr 104px 34px}.matrixControl input,.matrixControl select{min-height:42px}.helpButton{width:32px;min-width:32px;height:32px;min-height:32px}table{font-size:.86rem}th,td{padding:6px 8px}}
+
+
+.pwaStatus{margin-top:8px;color:var(--muted)}.pwaStatus strong{color:var(--accent)}
+@media(display-mode:standalone){.pwaOnlyHide{display:none!important}}
+</style>
+</head>
+<body>
+<header>
+<h1>Financial Planning Tool</h1>
+<div class="sub">Static browser tool with Actuals_Pack-style inputs, Plan Summary, Dashboard, Annual Summary, Monthly Engine, tax, stress testing and validation checks in one self-contained file. All calculations run locally in the browser.</div>
+<div class="toolbar">
+<label>Case preset <select id="caseSelect"><option value="GNL">High Income</option><option value="DJ">Low Income</option></select></label>
+<button id="resetBtn" class="secondary">Reset preset</button>
+<div class="fontControls" aria-label="Font size controls"><span>Font size</span><button id="fontDownBtn" class="ghost" type="button">A-</button><button id="fontResetBtn" class="ghost" type="button">Reset</button><button id="fontUpBtn" class="ghost" type="button">A+</button></div>
+<button id="exportScenarioBtn" class="secondary">Export scenario JSON</button>
+<label class="btn secondary" for="importScenario">Import scenario JSON</label><input id="importScenario" type="file" accept="application/json" style="display:none">
+<button id="exportAnnualBtn" class="secondary">Export annual CSV</button>
+<button id="exportMonthlyBtn" class="secondary">Export monthly CSV</button>
+<button id="installPwaBtn" class="secondary" hidden>Install app</button>
+</div>
+<div id="pwaStatus" class="pwaStatus" aria-live="polite"></div>
+</header>
+<div class="wrap">
+<div id="warningArea"></div>
+<div class="grid cards" id="kpis"></div>
+<div class="grid two" style="margin-top:16px">
+<aside class="panel">
+<h2>Inputs</h2>
+<div class="small">Edit the key assumptions below. Open a block to change assumptions. Use the ? buttons for field-level explainers.</div>
+<div class="inputTools"><button id="expandInputsBtn" class="ghost" type="button">Expand all</button><button id="collapseInputsBtn" class="ghost" type="button">Collapse all</button></div>
+<div id="inputs" class="controls inputAccordion"></div>
+</aside>
+<main class="grid">
+<section class="panel">
+<h2>Dashboard</h2>
+<div class="dashboardChartStack" aria-label="Dashboard charts">
+<div id="chartCashDebt" class="chart cashDebtChart"></div>
+<div id="chartNetWorth" class="chart netWorthChart"></div>
+</div>
+<div class="tabs"><button class="tab active" data-view="plan">Plan summary</button><button class="tab" data-view="dashboard">Dashboard</button><button class="tab" data-view="annual">Annual summary</button><button class="tab" data-view="tax">Tax bridge</button><button class="tab" data-view="lifestyle">Cash and lifestyle</button><button class="tab" data-view="monthly">Monthly engine</button><button class="tab" data-view="checks">Checks</button></div>
+<div id="view"></div>
+</section>
+<section class="panel">
+<h2>Stress tests and life choices</h2>
+<div class="phoneHint">On a phone, rotate to landscape for wide monthly and tax tables. Core inputs, stress tests and dashboard cards are usable in portrait.</div>
+<div class="small">Run a separate downside or choice case without overwriting the base plan. Use percentage points for rate shocks, and percentages for income or cost changes.</div>
+<div id="stressControls"></div>
+<div id="stressResults"></div>
+</section>
+<section class="panel">
+<h2>Model basis</h2>
+<p>The engine uses opening-month offset balances for loan-interest calculations, then calculates the closing offset from current month closing cash. Property deductions follow property use and genuine availability for rent, not the property used as loan security. Percentage fields are entered as visible percentages, for example 2.5 means 2.5%. The bonus field is a year 1 cash bonus amount, not a multiplier. Stress tests run as a separate comparison case and do not overwrite the base plan.</p>
+<p class="small">This is a planning model. It is not a tax return, a regulated financial product recommendation, or personal tax advice. Policy settings are parameterised and should be refreshed before live decisions.</p>
+</section>
+</main>
+</div>
+</div>
+<script id="presetData" type="application/json">{
+  "GNL": {
+    "caseName": "High Income",
+    "startDate": "2025-07-01",
+    "currentAge": 40,
+    "endAge": 95,
+    "retirementAge": 55,
+    "superAccessAge": 60,
+    "pensionAge": 67,
+    "includePension": true,
+    "autoDrawSuper": true,
+    "autoLiquidateInvestments": true,
+    "autoInvestExcessCash": false,
+    "minimumCashBuffer": 15000,
+    "inflation": 0.025,
+    "atoSettlementMonth": 11,
+    "hasPrivateHospitalCover": true,
+    "phiRebateViaPremium": true,
+    "otherRFBA": 0,
+    "medicareLevyRate": 0.02,
+    "baseSalary": 230000,
+    "salaryGrowth": 0.025,
+    "bonusMonth": 3,
+    "careerChangeEnabled": true,
+    "careerChangeDate": "2029-07-01",
+    "careerChangeSalaryImpact": -0.3,
+    "careerChangeBonusImpact": -1,
+    "salaryPackaged": 0,
+    "salarySacrifice": 0,
+    "personalDeductibleSuper": 0,
+    "personalDeductibleMonth": 0,
+    "livingCosts": 16800,
+    "travel": 6000,
+    "oneOffs": 2000,
+    "phiPremiumGross": 1620,
+    "novatedPostTaxAnnual": 0,
+    "openingCash": 320000,
+    "savingsRate": 0.042,
+    "openingOverdraft": 0,
+    "overdraftRate": 0.07,
+    "openingInvestments": 50000,
+    "investmentDividendYield": 0.02,
+    "investmentCapitalGrowth": 0.03,
+    "reinvestDividends": true,
+    "openingSuper": 210000,
+    "sgRate": 0.12,
+    "superReturn": 0.055,
+    "contribTaxRate": 0.15,
+    "concessionalCap": 30000,
+    "carryForwardAvailable": 30000,
+    "priorJuneSuper": 200000,
+    "carryForwardThreshold": 500000,
+    "payDiv293FromSuper": false,
+    "div293Threshold": 250000,
+    "div293Rate": 0.15,
+    "superDrawdownRate": 0.04,
+    "pensionAnnualMax": 30646.2,
+    "pensionGrowth": 0.025,
+    "property1HomeForPension": true,
+    "property2HomeForPension": false,
+    "p1Owned": true,
+    "p1AcqDate": "2020-07-01",
+    "p1CostBase": 210000,
+    "p1MarketValue": 550000,
+    "p1Growth": 0.03,
+    "p1RentAnnual": 23400,
+    "p1RentGrowth": 0.025,
+    "p1HoldingCosts": 4600,
+    "p1ManagementCosts": 2340,
+    "p1LoanOpening": 0,
+    "p1LoanRate": 0.062,
+    "p1LoanTerm": 30,
+    "p1OffsetTarget": 0,
+    "p1SaleEnabled": false,
+    "p1SaleMonth": "2027-01-01",
+    "p1SaleCostsPct": 0.02,
+    "p1CapitalLosses": 0,
+    "p2Included": true,
+    "p2AcqDate": "2026-10-01",
+    "p2CostBase": 800000,
+    "p2MarketValue": 800000,
+    "p2Growth": 0.025,
+    "p2RentAnnual": 0,
+    "p2RentGrowth": 0.025,
+    "p2HoldingCosts": 7200,
+    "p2ManagementCosts": 0,
+    "p2LoanOpening": 450000,
+    "p2LoanRate": 0.062,
+    "p2LoanTerm": 10,
+    "p2OffsetTarget": 0,
+    "p2SaleEnabled": false,
+    "p2SaleMonth": "2035-07-01",
+    "p2SaleCostsPct": 0.02,
+    "p2CapitalLosses": 0,
+    "p1RentStart": "2027-02-01",
+    "p2TransactionCosts": 34615,
+    "p2LoanEstablishmentCosts": 0,
+    "p2GrossAcqOutlay": 834615,
+    "p2CashEquity": 384615,
+    "p2DebtFunding": 450000,
+    "novatedStart": "2025-12-01",
+    "novatedTermMonths": 24,
+    "novatedPretaxMonthly": 1800,
+    "novatedBuyout": 28000,
+    "novatedExecuteBuyout": true,
+    "novatedVehicleType": "EV",
+    "novatedEVExempt": true,
+    "novatedVehicleValue": 45000,
+    "rfbaRate": 0.2,
+    "employeePostTaxContrib": 0,
+    "rfbaGrossup": 1.8868,
+    "novatedTaxableValue": 9000,
+    "novatedRFBAAnnual": 16981.2,
+    "totalRFBAAnnual": 16981.2,
+    "novatedFBTCashAnnual": 0,
+    "p1MainResidenceAtStart": true,
+    "switchMainResidenceToP2": true,
+    "mainResidenceSwitchDate": "2026-10-01",
+    "p1AvailableForRentDate": "2027-02-01",
+    "p1DeductibilityGate": true,
+    "bonusCashYear1": 30000.0,
+    "pensionPolicyMode": "workbookParity"
+  },
+  "DJ": {
+    "caseName": "Low Income",
+    "startDate": "2025-07-01",
+    "currentAge": 44,
+    "endAge": 95,
+    "retirementAge": 60,
+    "superAccessAge": 60,
+    "pensionAge": 67,
+    "includePension": true,
+    "autoDrawSuper": true,
+    "autoLiquidateInvestments": true,
+    "autoInvestExcessCash": false,
+    "minimumCashBuffer": 5000,
+    "inflation": 0.025,
+    "atoSettlementMonth": 11,
+    "hasPrivateHospitalCover": true,
+    "phiRebateViaPremium": true,
+    "otherRFBA": 0,
+    "medicareLevyRate": 0.02,
+    "baseSalary": 44600,
+    "salaryGrowth": 0.025,
+    "bonusMonth": 3,
+    "careerChangeEnabled": false,
+    "careerChangeDate": "2029-07-01",
+    "careerChangeSalaryImpact": -0.3,
+    "careerChangeBonusImpact": -1,
+    "salaryPackaged": 7200,
+    "salarySacrifice": 0,
+    "personalDeductibleSuper": 0,
+    "personalDeductibleMonth": 0,
+    "livingCosts": 16800,
+    "travel": 6000,
+    "oneOffs": 261,
+    "phiPremiumGross": 1920,
+    "novatedPostTaxAnnual": 0,
+    "openingCash": 1500,
+    "savingsRate": 0.042,
+    "openingOverdraft": 0,
+    "overdraftRate": 0.07,
+    "openingInvestments": 0,
+    "investmentDividendYield": 0.02,
+    "investmentCapitalGrowth": 0.03,
+    "reinvestDividends": true,
+    "openingSuper": 110000,
+    "sgRate": 0.12,
+    "superReturn": 0.055,
+    "contribTaxRate": 0.15,
+    "concessionalCap": 30000,
+    "carryForwardAvailable": 30000,
+    "priorJuneSuper": 118000,
+    "carryForwardThreshold": 500000,
+    "payDiv293FromSuper": false,
+    "div293Threshold": 250000,
+    "div293Rate": 0.15,
+    "superDrawdownRate": 0.04,
+    "pensionAnnualMax": 30646.2,
+    "pensionGrowth": 0.025,
+    "property1HomeForPension": true,
+    "property2HomeForPension": false,
+    "p1Owned": true,
+    "p1AcqDate": "2020-07-01",
+    "p1CostBase": 450000,
+    "p1MarketValue": 650000,
+    "p1Growth": 0.03,
+    "p1RentAnnual": 26000,
+    "p1RentGrowth": 0.025,
+    "p1HoldingCosts": 5500,
+    "p1ManagementCosts": 2600,
+    "p1LoanOpening": 0,
+    "p1LoanRate": 0.062,
+    "p1LoanTerm": 30,
+    "p1OffsetTarget": 0,
+    "p1SaleEnabled": false,
+    "p1SaleMonth": "2027-01-01",
+    "p1SaleCostsPct": 0.02,
+    "p1CapitalLosses": 0,
+    "p2Included": false,
+    "p2AcqDate": "2026-10-01",
+    "p2CostBase": 800000,
+    "p2MarketValue": 800000,
+    "p2Growth": 0.025,
+    "p2RentAnnual": 0,
+    "p2RentGrowth": 0.025,
+    "p2HoldingCosts": 7200,
+    "p2ManagementCosts": 0,
+    "p2LoanOpening": 450000,
+    "p2LoanRate": 0.062,
+    "p2LoanTerm": 10,
+    "p2OffsetTarget": 0,
+    "p2SaleEnabled": false,
+    "p2SaleMonth": "2035-07-01",
+    "p2SaleCostsPct": 0.02,
+    "p2CapitalLosses": 0,
+    "p1RentStart": "2060-02-01",
+    "p2TransactionCosts": 34615,
+    "p2LoanEstablishmentCosts": 0,
+    "p2GrossAcqOutlay": 834615,
+    "p2CashEquity": 384615,
+    "p2DebtFunding": 450000,
+    "novatedStart": "2025-12-01",
+    "novatedTermMonths": 24,
+    "novatedPretaxMonthly": 0,
+    "novatedBuyout": 0,
+    "novatedExecuteBuyout": true,
+    "novatedVehicleType": "EV",
+    "novatedEVExempt": true,
+    "novatedVehicleValue": 0,
+    "rfbaRate": 0.2,
+    "employeePostTaxContrib": 0,
+    "rfbaGrossup": 1.8868,
+    "novatedTaxableValue": 0,
+    "novatedRFBAAnnual": 0,
+    "totalRFBAAnnual": 0,
+    "novatedFBTCashAnnual": 0,
+    "p1MainResidenceAtStart": true,
+    "switchMainResidenceToP2": false,
+    "mainResidenceSwitchDate": "2026-10-01",
+    "p1AvailableForRentDate": "2027-02-01",
+    "p1DeductibilityGate": false,
+    "bonusCashYear1": 0.0,
+    "pensionPolicyMode": "workbookParity"
+  }
+}</script>
+<script>
+'use strict';
+const PRESETS = JSON.parse(document.getElementById('presetData').textContent);
+const POLICY = {
+  tax: {
+    mlsThresholds:[101000,118000,158000], mlsRates:[0.01,0.0125,0.015],
+    medicareLower:27222, medicareUpper:34027,
+    litoMax:700
+  },
+  pension: {
+    workbookParity: {maxAnnualSingle:30646.20, incomeFreeAnnual:5668, incomeTaper:0.5, homeownerAssetFree:321500, homeownerAssetCutoff:714500, nonHomeownerAssetFree:579500, nonHomeownerAssetCutoff:972500, deemingThreshold:64200, deemingLowerRate:0.0075, deemingUpperRate:0.0275, assetsTaperAnnual:0.078},
+    current2026: {maxAnnualSingle:31223.40, incomeFreeAnnual:5668, incomeTaper:0.5, homeownerAssetFree:321500, homeownerAssetCutoff:722000, nonHomeownerAssetFree:579500, nonHomeownerAssetCutoff:980000, deemingThreshold:64200, deemingLowerRate:0.0125, deemingUpperRate:0.0325, assetsTaperAnnual:0.078}
+  }
+};
+function pensionPolicy(s){return POLICY.pension[s.pensionPolicyMode||'workbookParity']||POLICY.pension.workbookParity;}
+let state = structuredClone(PRESETS.GNL);
+let activeView = 'plan';
+let latest = null;
+
+let stressLatest = null;
+let stressState = null;
+let fontScale = Number(localStorage.getItem('fp_font_scale') || '1');
+let stress = {
+  enabled:false,
+  preset:'custom',
+  incomeChangePct:0,
+  bonusChangePct:0,
+  loanRateShockPpt:0,
+  inflationShockPpt:0,
+  livingCostChangePct:0,
+  propertyGrowthShockPpt:0,
+  investmentReturnShockPpt:0,
+  superReturnShockPpt:0,
+  rentVacancyMonths:0,
+  retirementAgeShiftYears:0,
+  immediateCashCost:0
+};
+const STRESS_PRESETS = {
+  custom:{label:'Custom', values:{}},
+  ratesHigher:{label:'Rates +1.50 percentage points', values:{enabled:true,loanRateShockPpt:1.5}},
+  incomeSetback:{label:'Income setback: salary -20%, bonus -100%', values:{enabled:true,incomeChangePct:-20,bonusChangePct:-100}},
+  highInflation:{label:'High inflation and costs', values:{enabled:true,inflationShockPpt:1.5,livingCostChangePct:15}},
+  assetDownturn:{label:'Asset downturn', values:{enabled:true,propertyGrowthShockPpt:-2.5,investmentReturnShockPpt:-4,superReturnShockPpt:-3}},
+  earlyRetirement:{label:'Retire 2 years earlier', values:{enabled:true,retirementAgeShiftYears:-2}},
+  rentalVacancy:{label:'Rental vacancy: 2 months/year', values:{enabled:true,rentVacancyMonths:2}},
+  majorExpense:{label:'Immediate $50k cash cost', values:{enabled:true,immediateCashCost:50000}}
+};
+const STRESS_HELP = {
+  enabled:'Turns the stress test comparison on or off. The base plan remains unchanged.',
+  preset:'Loads a predefined real-world downside or life-choice scenario. You can still override individual stress fields after selecting a preset.',
+  incomeChangePct:'Percentage change applied to salary in the stress case. Enter -20 for a 20% salary reduction.',
+  bonusChangePct:'Percentage change applied to the cash bonus in the stress case. Enter -100 to remove bonus.',
+  loanRateShockPpt:'Additional percentage points added to loan interest rates in the stress case. Enter 1.5 to add 1.50 percentage points.',
+  inflationShockPpt:'Additional percentage points added to the general inflation assumption in the stress case.',
+  livingCostChangePct:'Percentage change applied to living, travel and one-off recurring costs in the stress case.',
+  propertyGrowthShockPpt:'Percentage-point change applied to annual property capital growth assumptions.',
+  investmentReturnShockPpt:'Percentage-point change applied to annual non-super investment returns.',
+  superReturnShockPpt:'Percentage-point change applied to annual superannuation investment returns.',
+  rentVacancyMonths:'Number of months of rental vacancy per year applied to rental income in the stress case.',
+  retirementAgeShiftYears:'Change to retirement age in years. Enter -2 to retire two years earlier or 3 to retire three years later.',
+  immediateCashCost:'One-off immediate cash cost applied at model start in the stress case.'
+};
+const moneyFields = new Set(['minimumCashBuffer','baseSalary','bonusCashYear1','salaryPackaged','salarySacrifice','personalDeductibleSuper','livingCosts','travel','oneOffs','phiPremiumGross','openingCash','openingOverdraft','openingInvestments','openingSuper','concessionalCap','carryForwardAvailable','priorJuneSuper','carryForwardThreshold','div293Threshold','pensionAnnualMax','p1CostBase','p1MarketValue','p1RentAnnual','p1HoldingCosts','p1ManagementCosts','p1LoanOpening','p1OffsetTarget','p1CapitalLosses','p2CostBase','p2MarketValue','p2RentAnnual','p2HoldingCosts','p2ManagementCosts','p2LoanOpening','p2OffsetTarget','p2CapitalLosses','p2TransactionCosts','p2LoanEstablishmentCosts','p2GrossAcqOutlay','p2CashEquity','p2DebtFunding','novatedPostTaxAnnual','novatedPretaxMonthly','novatedBuyout','novatedVehicleValue','employeePostTaxContrib']);
+const pctFields = new Set(['inflation','medicareLevyRate','salaryGrowth','careerChangeSalaryImpact','careerChangeBonusImpact','savingsRate','overdraftRate','investmentDividendYield','investmentCapitalGrowth','sgRate','superReturn','contribTaxRate','div293Rate','superDrawdownRate','pensionGrowth','p1Growth','p1RentGrowth','p1LoanRate','p1SaleCostsPct','p2Growth','p2RentGrowth','p2LoanRate','p2SaleCostsPct','rfbaRate']);
+const boolFields = new Set(['includePension','autoDrawSuper','autoLiquidateInvestments','autoInvestExcessCash','hasPrivateHospitalCover','phiRebateViaPremium','careerChangeEnabled','reinvestDividends','payDiv293FromSuper','property1HomeForPension','property2HomeForPension','p1Owned','p1SaleEnabled','p2Included','p2SaleEnabled','novatedExecuteBuyout','novatedEVExempt','p1MainResidenceAtStart','switchMainResidenceToP2','p1DeductibilityGate']);
+const enumFields = {pensionPolicyMode:['workbookParity','current2026']};
+const dateFields = new Set(['startDate','careerChangeDate','p1AcqDate','p1SaleMonth','p2AcqDate','p2SaleMonth','p1RentStart','novatedStart','mainResidenceSwitchDate','p1AvailableForRentDate']);
+const INPUT_GROUPS = [
+  ['Control and horizon',['startDate','currentAge','endAge','retirementAge','superAccessAge','pensionAge','minimumCashBuffer','inflation','atoSettlementMonth']],
+  ['Income and tax',['baseSalary','salaryGrowth','bonusCashYear1','bonusMonth','careerChangeEnabled','careerChangeDate','careerChangeSalaryImpact','careerChangeBonusImpact','salaryPackaged','salarySacrifice','hasPrivateHospitalCover']],
+  ['Living costs and lifestyle',['livingCosts','travel','oneOffs','phiPremiumGross','novatedPostTaxAnnual']],
+  ['Cash and investments',['openingCash','openingOverdraft','overdraftRate','savingsRate','openingInvestments','investmentDividendYield','investmentCapitalGrowth','reinvestDividends','autoInvestExcessCash','autoLiquidateInvestments']],
+  ['Super and retirement',['openingSuper','sgRate','superReturn','contribTaxRate','concessionalCap','carryForwardAvailable','priorJuneSuper','payDiv293FromSuper','div293Threshold','superDrawdownRate','includePension','pensionPolicyMode']],
+  ['Property use and tax flags',['p1MainResidenceAtStart','switchMainResidenceToP2','mainResidenceSwitchDate','p1AvailableForRentDate','p1DeductibilityGate','property1HomeForPension','property2HomeForPension']],
+  ['Property 1',['p1Owned','p1MarketValue','p1Growth','p1RentStart','p1RentAnnual','p1RentGrowth','p1HoldingCosts','p1ManagementCosts','p1LoanOpening','p1LoanRate','p1LoanTerm']],
+  ['Property 2',['p2Included','p2AcqDate','p2MarketValue','p2Growth','p2GrossAcqOutlay','p2DebtFunding','p2HoldingCosts','p2LoanOpening','p2LoanRate','p2LoanTerm']],
+  ['Novated lease',['novatedStart','novatedTermMonths','novatedPretaxMonthly','novatedBuyout','novatedExecuteBuyout','novatedEVExempt','novatedVehicleValue','rfbaRate','rfbaGrossup']]
+];
+const LABELS = {
+  startDate:"Model start date (month)",
+  currentAge:"Current age (years)",
+  endAge:"Planning end age (years)",
+  retirementAge:"Retirement age (years)",
+  superAccessAge:"Super access age (years)",
+  pensionAge:"Age Pension age (years)",
+  minimumCashBuffer:"Minimum cash buffer ($)",
+  inflation:"Annual inflation (% p.a.)",
+  atoSettlementMonth:"ATO settlement month (1-12)",
+  baseSalary:"Base salary ($/year)",
+  salaryGrowth:"Salary growth (% p.a.)",
+  bonusCashYear1:"Year 1 cash bonus ($)",
+  bonusMonth:"Bonus month (1-12)",
+  careerChangeEnabled:"Career change enabled (yes/no)",
+  careerChangeDate:"Career change date (month)",
+  careerChangeSalaryImpact:"Career change salary impact (%)",
+  careerChangeBonusImpact:"Career change bonus impact (%)",
+  salaryPackaged:"Pre-tax salary package ($/year)",
+  salarySacrifice:"Salary sacrifice to super ($/year)",
+  hasPrivateHospitalCover:"Private hospital cover (yes/no)",
+  livingCosts:"Living costs ($/year)",
+  travel:"Travel ($/year)",
+  oneOffs:"One-offs ($/year)",
+  phiPremiumGross:"Private health insurance premium, gross ($/year)",
+  novatedPostTaxAnnual:"Novated lease post-tax cash cost ($/year)",
+  openingCash:"Opening cash incl offset ($)",
+  savingsRate:"Savings rate (% p.a.)",
+  openingOverdraft:"Opening overdraft ($)",
+  overdraftRate:"Overdraft rate (% p.a.)",
+  openingInvestments:"Opening investments ($)",
+  investmentDividendYield:"Dividend yield (% p.a.)",
+  investmentCapitalGrowth:"Capital growth (% p.a.)",
+  reinvestDividends:"Reinvest dividends (yes/no)",
+  autoInvestExcessCash:"Auto-invest excess cash (yes/no)",
+  autoLiquidateInvestments:"Auto-liquidate investments (yes/no)",
+  openingSuper:"Opening super ($)",
+  sgRate:"Employer SG rate (% salary)",
+  superReturn:"Super return (% p.a.)",
+  contribTaxRate:"Contributions tax rate (%)",
+  concessionalCap:"Concessional cap ($/year)",
+  carryForwardAvailable:"Carry-forward concessional available ($)",
+  priorJuneSuper:"Prior 30 June super ($)",
+  carryForwardThreshold:"Carry-forward threshold ($)",
+  payDiv293FromSuper:"Pay Division 293 from super (yes/no)",
+  div293Threshold:"Division 293 threshold ($/year)",
+  div293Rate:"Division 293 rate (%)",
+  superDrawdownRate:"Super drawdown rate (% p.a.)",
+  includePension:"Include Age Pension (yes/no)",
+  pensionAnnualMax:"Age Pension maximum ($/year)",
+  pensionGrowth:"Age Pension growth (% p.a.)",
+  pensionPolicyMode:"Age Pension policy basis",
+  p1MainResidenceAtStart:"P1 main residence at start (yes/no)",
+  switchMainResidenceToP2:"Switch main residence to P2 (yes/no)",
+  mainResidenceSwitchDate:"Main residence switch date (month)",
+  p1AvailableForRentDate:"P1 genuinely available for rent (month)",
+  p1DeductibilityGate:"Enforce P1 availability gate (yes/no)",
+  property1HomeForPension:"P1 principal home for pension test (yes/no)",
+  property2HomeForPension:"P2 principal home for pension test (yes/no)",
+  p1Owned:"Property 1 owned (yes/no)",
+  p1AcqDate:"P1 acquisition date (month)",
+  p1CostBase:"P1 cost base ($)",
+  p1MarketValue:"P1 market value ($)",
+  p1Growth:"P1 value growth (% p.a.)",
+  p1RentStart:"P1 rent start month",
+  p1RentAnnual:"P1 gross rent ($/year)",
+  p1RentGrowth:"P1 rent growth (% p.a.)",
+  p1HoldingCosts:"P1 holding costs ($/year)",
+  p1ManagementCosts:"P1 management costs ($/year)",
+  p1LoanOpening:"P1 loan opening balance ($)",
+  p1LoanRate:"P1 loan rate (% p.a.)",
+  p1LoanTerm:"P1 loan term (years)",
+  p1OffsetTarget:"P1 offset target ($)",
+  p1SaleEnabled:"P1 sale enabled (yes/no)",
+  p1SaleMonth:"P1 sale month",
+  p1SaleCostsPct:"P1 sale costs (%)",
+  p1CapitalLosses:"P1 carried capital losses ($)",
+  p2Included:"Property 2 included (yes/no)",
+  p2AcqDate:"P2 acquisition date (month)",
+  p2CostBase:"P2 cost base ($)",
+  p2MarketValue:"P2 market/acquisition value ($)",
+  p2Growth:"P2 value growth (% p.a.)",
+  p2RentAnnual:"P2 gross rent ($/year)",
+  p2RentGrowth:"P2 rent growth (% p.a.)",
+  p2HoldingCosts:"P2 holding costs ($/year)",
+  p2ManagementCosts:"P2 management costs ($/year)",
+  p2LoanOpening:"P2 loan opening balance ($)",
+  p2LoanRate:"P2 loan rate (% p.a.)",
+  p2LoanTerm:"P2 loan term (years)",
+  p2OffsetTarget:"P2 offset target ($)",
+  p2SaleEnabled:"P2 sale enabled (yes/no)",
+  p2SaleMonth:"P2 sale month",
+  p2SaleCostsPct:"P2 sale costs (%)",
+  p2CapitalLosses:"P2 carried capital losses ($)",
+  p2TransactionCosts:"P2 transaction costs ($)",
+  p2LoanEstablishmentCosts:"P2 loan establishment costs ($)",
+  p2GrossAcqOutlay:"P2 gross acquisition cash outlay ($)",
+  p2CashEquity:"P2 cash equity contribution ($)",
+  p2DebtFunding:"P2 debt funding at acquisition ($)",
+  novatedStart:"Novated lease start month",
+  novatedTermMonths:"Novated lease term (months)",
+  novatedPretaxMonthly:"Novated lease pre-tax cost ($/month)",
+  novatedBuyout:"Novated lease buyout ($)",
+  novatedExecuteBuyout:"Execute lease buyout (yes/no)",
+  novatedVehicleType:"Novated vehicle type",
+  novatedEVExempt:"EV FBT exempt (yes/no)",
+  novatedVehicleValue:"Vehicle value ($)",
+  rfbaRate:"RFBA statutory rate (%)",
+  employeePostTaxContrib:"Employee post-tax contribution ($)",
+  rfbaGrossup:"RFBA gross-up factor (x)",
+  novatedTaxableValue:"Novated taxable value ($)",
+  novatedRFBAAnnual:"Novated RFBA ($/year)",
+  totalRFBAAnnual:"Total RFBA ($/year)",
+  novatedFBTCashAnnual:"Novated FBT cash cost ($/year)"
+};
+const FIELD_HELP = {
+  startDate:'First month of the planning model. The engine builds monthly cash flows from this date and aggregates them into financial years ending 30 June.',
+  currentAge:'Current age at the model start date. This drives retirement timing, superannuation access timing and Age Pension eligibility.',
+  endAge:'Final age in the planning horizon. A longer horizon gives more retirement visibility but increases reliance on long-dated assumptions.',
+  retirementAge:'Age at which employment income stops in the model unless a stress test changes it.',
+  superAccessAge:'Age from which the model can draw on superannuation, subject to the scenario settings.',
+  pensionAge:'Age at which Age Pension eligibility can start in the model if the pension module is switched on.',
+  minimumCashBuffer:'Minimum cash to keep outside offset or investment sweeps. Excess cash may be moved into offset or invested depending on the selected policy.',
+  inflation:'General annual escalation assumption. Enter percentage points, for example 2.5 for 2.5%.',
+  atoSettlementMonth:'Month number when prior-year Australian Taxation Office settlement cash is paid or refunded. November is entered as 11.',
+  baseSalary:'Year 1 gross annual base salary before salary packaging, salary sacrifice and tax withholding.',
+  salaryGrowth:'Annual salary escalation assumption. Enter percentage points, for example 2.5 for 2.5%.',
+  bonusCashYear1:'Year 1 gross cash bonus assumption in dollars. This is not a bonus factor. It inflates with the model unless changed by a stress test or career change.',
+  bonusMonth:'Month number when the cash bonus is received. March is entered as 3.',
+  careerChangeEnabled:'Turns on the modelled career-change adjustment from the selected career-change date.',
+  careerChangeDate:'Month when the career-change salary and bonus adjustments start.',
+  careerChangeSalaryImpact:'Percentage change to salary after the career-change date. Enter -30 for a 30% reduction or 10 for a 10% increase.',
+  careerChangeBonusImpact:'Percentage change to bonus after the career-change date. Enter -100 to remove bonus after that date.',
+  salaryPackaged:'Annual pre-tax salary packaging amount. This reduces taxable salary cash in the monthly employment bridge.',
+  salarySacrifice:'Annual salary sacrifice contribution to superannuation. This reduces taxable salary and increases concessional super contributions.',
+  hasPrivateHospitalCover:'Used for Medicare levy surcharge logic. It does not by itself prove tax eligibility, but it controls the planning-model assumption.',
+  livingCosts:'Annual core living-cost assumption before inflation. This maps to the Actuals_Pack Living costs and lifestyle block and flows to monthly cash outflows.',
+  travel:'Annual travel budget before inflation. This is a lifestyle cash outflow and is included in core outgoings.',
+  oneOffs:'Annual recurring one-off or discretionary spending allowance. Use this for planned irregular expenses that should recur each year in the scenario.',
+  phiPremiumGross:'Gross annual private health insurance premium before any rebate adjustment. The model converts this to monthly cash premium using the PHI rebate setting.',
+  novatedPostTaxAnnual:'Annual post-tax novated lease cash cost not already captured through pre-tax lease deductions. Leave at zero if not applicable.',
+  openingCash:'Opening total cash including any amount that may later be allocated to offset. The model splits cash between savings and offset after each month.',
+  savingsRate:'Annual interest rate earned on true savings cash outside offset. Enter percentage points, for example 4.2 for 4.2%.',
+  openingInvestments:'Opening non-super investment balance. Dividends and capital growth are applied monthly.',
+  investmentDividendYield:'Annual cash or reinvested dividend yield on the investment balance. Enter percentage points.',
+  investmentCapitalGrowth:'Annual capital growth assumption on the investment balance. Enter percentage points.',
+  reinvestDividends:'If yes, dividends are taxable but added to investments rather than received as cash.',
+  autoInvestExcessCash:'If yes, cash above the minimum buffer is automatically invested after monthly cash flows.',
+  autoLiquidateInvestments:'If yes, investments are sold to cover cash shortfalls before overdraft or other balancing items.',
+  openingSuper:'Opening superannuation balance at model start.',
+  sgRate:'Employer superannuation guarantee contribution rate. Enter percentage points, for example 12 for 12%.',
+  superReturn:'Annual investment return assumption inside superannuation. Enter percentage points.',
+  contribTaxRate:'Tax rate applied to concessional super contributions. Enter percentage points.',
+  concessionalCap:'Annual concessional contribution cap assumed by the model.',
+  carryForwardAvailable:'Available carried-forward concessional contribution capacity assumed at model start.',
+  priorJuneSuper:'Superannuation balance at the previous 30 June. Used for carry-forward contribution eligibility logic.',
+  payDiv293FromSuper:'If yes, Division 293 tax cash is paid from super rather than from personal cash.',
+  div293Threshold:'Adjusted income threshold used to assess Division 293 tax in the planning model.',
+  superDrawdownRate:'Annual drawdown rate used once super drawdown is available and needed. Enter percentage points.',
+  includePension:'Turns the Age Pension module on or off for eligible years.',
+  pensionPolicyMode:'Selects whether the Age Pension settings follow workbook-parity assumptions or the current parameter basis embedded in this tool.',
+  p1MainResidenceAtStart:'Assumes Property 1 is the main residence at model start. Main-residence costs are cash outflows but not rental deductions.',
+  switchMainResidenceToP2:'If yes, the model switches main residence status from Property 1 to Property 2 from the selected switch date.',
+  mainResidenceSwitchDate:'Month when Property 2 becomes the main residence and Property 1 stops being the main residence.',
+  p1AvailableForRentDate:'Month when Property 1 is assumed genuinely available for rent for tax-deduction gating.',
+  p1DeductibilityGate:'If yes, Property 1 rental deductions are blocked until it is genuinely available for rent and no longer the main residence.',
+  property1HomeForPension:'If yes, Property 1 is treated as the principal home for the Age Pension assets test.',
+  property2HomeForPension:'If yes, Property 2 is treated as the principal home for the Age Pension assets test.',
+  p1Owned:'Switch for whether Property 1 exists in the scenario.',
+  p1MarketValue:'Opening market value of Property 1 used for net worth and property equity calculations.',
+  p1Growth:'Annual capital growth rate for Property 1. Enter percentage points.',
+  p1RentStart:'Month when Property 1 rent begins in cash flow. Tax deductibility still follows the main-residence and availability flags.',
+  p1RentAnnual:'Year 1 annual gross rent for Property 1.',
+  p1RentGrowth:'Annual rental escalation for Property 1. Enter percentage points.',
+  p1HoldingCosts:'Annual non-financing holding costs for Property 1, such as strata, council rates, insurance and maintenance.',
+  p1ManagementCosts:'Annual property-management cost assumption for Property 1 once rented.',
+  p1LoanOpening:'Opening Property 1 loan balance.',
+  p1LoanRate:'Annual interest rate on the Property 1 loan. Enter percentage points.',
+  p1LoanTerm:'Remaining loan term in years for amortisation calculations.',
+  p2Included:'Switch for whether Property 2 acquisition and ownership are included in the scenario.',
+  p2AcqDate:'Month when Property 2 is acquired and related acquisition cash flows occur.',
+  p2MarketValue:'Starting or acquisition market value of Property 2 used for net worth and growth calculations.',
+  p2Growth:'Annual capital growth rate for Property 2. Enter percentage points.',
+  p2GrossAcqOutlay:'Total Property 2 acquisition cash outlay including purchase price and transaction costs.',
+  p2DebtFunding:'Debt drawn to fund Property 2 acquisition. Deductibility still depends on loan purpose and property use.',
+  p2HoldingCosts:'Annual non-financing holding costs for Property 2.',
+  p2LoanOpening:'Opening or initial Property 2 loan balance used for interest, amortisation and offset calculations.',
+  p2LoanRate:'Annual interest rate on the Property 2 loan. Enter percentage points.',
+  p2LoanTerm:'Loan term in years for Property 2 amortisation calculations.',
+  novatedStart:'Month when the novated lease begins.',
+  novatedTermMonths:'Lease term in months.',
+  novatedPretaxMonthly:'Monthly pre-tax novated lease deduction during the lease term.',
+  novatedBuyout:'Residual or buyout cash amount at the end of the novated lease, if executed.',
+  novatedExecuteBuyout:'If yes, the buyout amount is paid when the lease term ends.',
+  novatedEVExempt:'Assumes electric-vehicle fringe benefits tax exemption applies in the model.',
+  novatedVehicleValue:'Vehicle value used for reportable fringe benefits calculations.',
+  rfbaRate:'Statutory rate used for reportable fringe benefits amount calculations. Enter percentage points.',
+  rfbaGrossup:'Gross-up factor used to convert taxable value into reportable fringe benefits amount.'
+};
+function clone(x){return JSON.parse(JSON.stringify(x));}
+function parseDate(d){return new Date(String(d||'1970-01-01')+'T00:00:00Z');}
+function ymd(d){return d.toISOString().slice(0,10);}
+function addMonths(date,n){const d=parseDate(date); return new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+n,1));}
+function sameMonth(a,b){const x=parseDate(a), y=parseDate(b); return x.getUTCFullYear()===y.getUTCFullYear()&&x.getUTCMonth()===y.getUTCMonth();}
+function geMonth(a,b){if(!a||!b)return false; const x=parseDate(a), y=parseDate(b); return x.getUTCFullYear()>y.getUTCFullYear() || (x.getUTCFullYear()===y.getUTCFullYear()&&x.getUTCMonth()>=y.getUTCMonth());}
+function ltMonth(a,b){if(!a||!b)return false; const x=parseDate(a), y=parseDate(b); return x.getUTCFullYear()<y.getUTCFullYear() || (x.getUTCFullYear()===y.getUTCFullYear()&&x.getUTCMonth()<y.getUTCMonth());}
+function monthNum(d){return parseDate(d).getUTCMonth()+1;}
+function fyOf(date){const d=parseDate(date); return d.getUTCFullYear()+(d.getUTCMonth()>=6?1:0);}
+function n(v){const x=Number(v); return Number.isFinite(x)?x:0;}
+function fmtMoney(x){return (n(x)<0?'-':'')+'$'+Math.abs(n(x)).toLocaleString('en-AU',{maximumFractionDigits:0});}
+function fmtMoney2(x){return (n(x)<0?'-':'')+'$'+Math.abs(n(x)).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtPct(x){return (n(x)*100).toLocaleString('en-AU',{maximumFractionDigits:2})+'%';}
+function fmtNum(x){return n(x).toLocaleString('en-AU',{maximumFractionDigits:2});}
+function annualIndex(i){return Math.floor(i/12);}
+function indexFactor(s,i){return Math.pow(1+n(s.inflation), annualIndex(i));}
+function propertyGrowthFactor(rate,i){return Math.pow(1+n(rate), i/12);}
+function monthlyPayment(principal,annualRate,years){principal=n(principal); if(principal<=0||years<=0)return 0; const r=n(annualRate)/12, m=years*12; if(r===0)return principal/m; return principal*(r*Math.pow(1+r,m))/(Math.pow(1+r,m)-1);}
+function taxTable(fy){const lowRate=fy<=2026?0.16:(fy===2027?0.15:0.14); return [[0,0,0],[18200,lowRate,0],[45000,0.30,(45000-18200)*lowRate],[135000,0.37,(45000-18200)*lowRate+(135000-45000)*0.30],[190000,0.45,(45000-18200)*lowRate+(135000-45000)*0.30+(190000-135000)*0.37]];}
+function incomeTax(taxable,fy){taxable=Math.max(0,n(taxable)); const t=taxTable(fy); let row=t[0]; for(let i=1;i<t.length;i++){if(taxable>=t[i][0])row=t[i]; else break;} return row[2]+Math.max(0,taxable-row[0])*row[1];}
+function lito(taxable,incomeTaxBeforeOffset){taxable=Math.max(0,n(taxable)); let off=0; if(taxable<=37500)off=700; else if(taxable<=45000)off=700-(taxable-37500)*0.05; else if(taxable<=66667)off=325-(taxable-45000)*0.015; return Math.min(Math.max(0,off),Math.max(0,incomeTaxBeforeOffset));}
+function medicare(taxable,rate){taxable=Math.max(0,n(taxable)); if(taxable<=POLICY.tax.medicareLower)return 0; const full=taxable*n(rate||0.02); if(taxable<POLICY.tax.medicareUpper)return Math.min(full,(taxable-POLICY.tax.medicareLower)*0.10); return full;}
+function mls(s,taxable,rfba){if(s.hasPrivateHospitalCover)return 0; const income=n(taxable)+n(rfba); const [a,b,c]=POLICY.tax.mlsThresholds; let r=0; if(income>a)r=POLICY.tax.mlsRates[0]; if(income>b)r=POLICY.tax.mlsRates[1]; if(income>c)r=POLICY.tax.mlsRates[2]; return income*r;}
+function phiRebateRate(s,age,adjustedIncome){if(!s.phiRebateViaPremium)return 0; const thresholds=POLICY.tax.mlsThresholds; let tier=0; if(adjustedIncome>thresholds[2])tier=3; else if(adjustedIncome>thresholds[1])tier=2; else if(adjustedIncome>thresholds[0])tier=1; const under65=[0.24288,0.16192,0.08095,0]; const age65=[0.28337,0.20240,0.12143,0]; const age70=[0.32385,0.24288,0.16192,0]; return age>=70?age70[tier]:(age>=65?age65[tier]:under65[tier]);}
+function withholdingMonthly(s,monthlyTaxableSalary,fy){const annual=Math.max(0,n(monthlyTaxableSalary)*12); return (incomeTax(annual,fy)+medicare(annual,s.medicareLevyRate))/12;}
+function bonusWithholding(s,annualSalaryTaxable,bonus,fy){bonus=Math.max(0,n(bonus)); if(!bonus)return 0; const base=Math.max(0,n(annualSalaryTaxable)); return Math.max(0,incomeTax(base+bonus,fy)+medicare(base+bonus,s.medicareLevyRate)-incomeTax(base,fy)-medicare(base,s.medicareLevyRate));}
+function runScenario(s){let taxMap={}, monthly=[], annual={}; for(let pass=0; pass<3; pass++){monthly=runMonthly(s,taxMap); annual=aggregateAnnual(monthly); taxMap=calcTaxMap(annual,s);} return {monthly, annual, taxMap, checks:runChecks(monthly,annual,taxMap,s)};}
+function maxTaxMapDelta(a,b){let d=0; const yrs=new Set([...Object.keys(a||{}),...Object.keys(b||{})]); for(const fy of yrs){for(const k of ['settlementExDiv293','quarterlyInstalmentsAssessed','div293','totalTax'])d=Math.max(d,Math.abs(n((a[fy]||{})[k])-n((b[fy]||{})[k])));} return d;}
+function runMonthly(s,taxMap){taxMap=Object.assign({},taxMap||{}); const months=Math.max(12,Math.round((n(s.endAge)-n(s.currentAge))*12)); let arr=[]; let cash=n(s.openingCash), od=n(s.openingOverdraft), inv=n(s.openingInvestments), sup=n(s.openingSuper); let p1Loan=n(s.p1LoanOpening), p2Loan=0; let p1Sold=false, p2Sold=false;
+ for(let i=0;i<months;i++){const date=ymd(addMonths(s.startDate,i)); const fy=fyOf(date); const age=n(s.currentAge)+i/12; const idx=indexFactor(s,i); const work=age<n(s.retirementAge); const superAccess=age>=n(s.superAccessAge); const pensionAccess=age>=n(s.pensionAge); const career=s.careerChangeEnabled && geMonth(date,s.careerChangeDate); const p1Active=s.p1Owned&&!p1Sold; const p2AcqMonth=s.p2Included&&sameMonth(date,s.p2AcqDate); let p2Active=s.p2Included&&geMonth(date,s.p2AcqDate)&&!p2Sold; if(p2AcqMonth&&p2Loan===0)p2Loan=n(s.p2LoanOpening||s.p2DebtFunding);
+   const p1MR=!!(p1Active&&s.p1MainResidenceAtStart&&(!s.switchMainResidenceToP2 || ltMonth(date,s.mainResidenceSwitchDate)));
+   const p2MR=!!(p2Active&&s.switchMainResidenceToP2&&geMonth(date,s.mainResidenceSwitchDate));
+   const p1Avail=!!(p1Active&&!p1MR&&(s.p1DeductibilityGate?geMonth(date,s.p1AvailableForRentDate):true));
+   const p2Avail=!!(p2Active&&!p2MR);
+   const p1OpeningLoan=p1Loan, p2OpeningLoan=p2Loan, cashOpening=cash, invOpening=inv, supOpening=sup, odOpening=od;
+   const openingOffsets=allocateOffset(cashOpening,n(s.minimumCashBuffer),p1OpeningLoan,p2OpeningLoan,p1Active,p2Active,n(s.p1LoanRate),n(s.p2LoanRate));
+   const savingsOpeningExOffset=Math.max(0,cashOpening-openingOffsets.total);
+   const salaryBase=work?n(s.baseSalary)*idx*(career?1+n(s.careerChangeSalaryImpact):1)/12:0;
+   const bonus=work&&monthNum(date)===n(s.bonusMonth)?n(s.bonusCashYear1)*idx*(career?1+n(s.careerChangeBonusImpact):1):0;
+   const novatedInLease=geMonth(date,s.novatedStart)&&ltMonth(date,ymd(addMonths(s.novatedStart,n(s.novatedTermMonths))));
+   const preTaxPackage=(work?n(s.salaryPackaged)*idx/12:0)+(novatedInLease?n(s.novatedPretaxMonthly):0);
+   const salarySacrifice=work?n(s.salarySacrifice)*idx/12:0;
+   const personalDeductible=monthNum(date)===n(s.personalDeductibleMonth)?n(s.personalDeductibleSuper):0;
+   const taxableSalary=Math.max(0,salaryBase-preTaxPackage-salarySacrifice);
+   const payg=withholdingMonthly(s,taxableSalary,fy);
+   const bonusPayg=bonusWithholding(s,taxableSalary*12,bonus,fy);
+   const savingsInterest=savingsOpeningExOffset*n(s.savingsRate)/12;
+   const divTotal=invOpening*n(s.investmentDividendYield)/12; const divCash=s.reinvestDividends?0:divTotal; const divReinvest=s.reinvestDividends?divTotal:0; const capGrowth=invOpening*n(s.investmentCapitalGrowth)/12;
+   const p1Rent=p1Active&&geMonth(date,s.p1RentStart)?n(s.p1RentAnnual)*idx/12:0; const p2Rent=p2Active?n(s.p2RentAnnual)*idx/12:0;
+   const p1Costs=p1Active?(n(s.p1HoldingCosts)*idx/12+(geMonth(date,s.p1RentStart)?n(s.p1ManagementCosts)*idx/12:0)):0; const p2Costs=p2Active?(n(s.p2HoldingCosts)+n(s.p2ManagementCosts))*idx/12:0;
+   const p1Interest=p1Active?Math.max(0,p1OpeningLoan-openingOffsets.p1)*n(s.p1LoanRate)/12:0; const p2Interest=p2Active?Math.max(0,p2OpeningLoan-openingOffsets.p2)*n(s.p2LoanRate)/12:0;
+   const p1Payment=monthlyPayment(n(s.p1LoanOpening),n(s.p1LoanRate),n(s.p1LoanTerm)); const p2Payment=monthlyPayment(n(s.p2LoanOpening||s.p2DebtFunding),n(s.p2LoanRate),n(s.p2LoanTerm));
+   const p1Principal=p1Active?Math.min(p1OpeningLoan,Math.max(0,p1Payment-p1Interest)):0; const p2Principal=p2Active?Math.min(p2OpeningLoan,Math.max(0,p2Payment-p2Interest)):0;
+   const adjustedIncomeForPhi=(taxableSalary*12)+n(s.bonusCashYear1)+n(s.otherRFBA)+n(s.totalRFBAAnnual); const phiCash=n(s.phiPremiumGross)*idx/12*(1-phiRebateRate(s,age,adjustedIncomeForPhi));
+   const living=n(s.livingCosts)*idx/12, travel=n(s.travel)*idx/12, oneOffs=n(s.oneOffs)*idx/12, novatedPostTax=novatedInLease?n(s.novatedPostTaxAnnual)*idx/12:0;
+   const odInterest=odOpening*n(s.overdraftRate)/12;
+   const priorTax=taxMap[fy-1]||{}; const taxSettlementCash=monthNum(date)===n(s.atoSettlementMonth)?-n(priorTax.settlementExDiv293):0; const div293Cash=monthNum(date)===n(s.atoSettlementMonth)&&!s.payDiv293FromSuper?n(priorTax.div293):0; const atoQuarterlyInstalmentsCash=([3,6,9,12].includes(monthNum(date)))?n(priorTax.quarterlyInstalmentsAssessed)/4:0;
+   const loanProceeds=p2AcqMonth?n(s.p2DebtFunding||s.p2LoanOpening):0; const p2AcqOutflow=p2AcqMonth?n(s.p2GrossAcqOutlay || (n(s.p2CostBase)+n(s.p2TransactionCosts)+n(s.p2LoanEstablishmentCosts))):0;
+   const buyout=s.novatedExecuteBuyout&&sameMonth(date,ymd(addMonths(s.novatedStart,n(s.novatedTermMonths))))?n(s.novatedBuyout):0;
+   const p1Value=p1Active?n(s.p1MarketValue)*propertyGrowthFactor(s.p1Growth,i):0;
+   const p2MonthsActive=s.p2Included&&geMonth(date,s.p2AcqDate)?Math.max(0,(parseDate(date).getUTCFullYear()-parseDate(s.p2AcqDate).getUTCFullYear())*12+(parseDate(date).getUTCMonth()-parseDate(s.p2AcqDate).getUTCMonth())):0;
+   const p2Value=p2Active?n(s.p2MarketValue)*propertyGrowthFactor(s.p2Growth,p2MonthsActive):0;
+   const p1SaleProceeds=(s.p1SaleEnabled&&sameMonth(date,s.p1SaleMonth)&&p1Active)?Math.max(0,p1Value*(1-n(s.p1SaleCostsPct))-Math.max(0,p1OpeningLoan-p1Principal)):0;
+   const p2SaleProceeds=(s.p2SaleEnabled&&sameMonth(date,s.p2SaleMonth)&&p2Active)?Math.max(0,p2Value*(1-n(s.p2SaleCostsPct))-Math.max(0,p2OpeningLoan-p2Principal)):0;
+   const assessableAssets=cashOpening+invOpening+supOpening+(p1Active&&!s.property1HomeForPension?Math.max(0,p1Value-p1OpeningLoan):0)+(p2Active&&!s.property2HomeForPension?Math.max(0,p2Value-p2OpeningLoan):0);
+   const pp=pensionPolicy(s);
+   const financialAssets=cashOpening+invOpening+supOpening;
+   const deemedIncome=Math.min(financialAssets,pp.deemingThreshold)*pp.deemingLowerRate+Math.max(0,financialAssets-pp.deemingThreshold)*pp.deemingUpperRate;
+   const isPensionHomeowner=!!((p1Active&&s.property1HomeForPension)||(p2Active&&s.property2HomeForPension));
+   const pensionAnnual=pensionAccess&&s.includePension?pensionPayableAnnual(s,idx,assessableAssets,deemedIncome+Math.max(0,p1Rent-p1Costs-p1Interest)+Math.max(0,p2Rent-p2Costs-p2Interest),isPensionHomeowner):0;
+   const pensionCash=pensionAnnual/12;
+   const taxableP1Rent=p1Avail?p1Rent:0, deductP1Costs=p1Avail?p1Costs:0, deductP1Interest=p1Avail?p1Interest:0;
+   const taxableP2Rent=p2Avail?p2Rent:0, deductP2Costs=p2Avail?p2Costs:0, deductP2Interest=p2Avail?p2Interest:0;
+   const netTaxablePassiveExBonus=savingsInterest+divCash+divReinvest+taxableP1Rent-deductP1Costs-deductP1Interest+taxableP2Rent-deductP2Costs-deductP2Interest;
+   const taxablePassivePlusBonus=bonus+netTaxablePassiveExBonus;
+   const capitalGain=(p1SaleProceeds?Math.max(0,(p1Value*(1-n(s.p1SaleCostsPct))-n(s.p1CostBase)-n(s.p1CapitalLosses))*0.5):0)+(p2SaleProceeds?Math.max(0,(p2Value*(1-n(s.p2SaleCostsPct))-n(s.p2CostBase)-n(s.p2CapitalLosses))*0.5):0);
+   const employerSG=work?salaryBase*n(s.sgRate):0; const totalConcessional=employerSG+salarySacrifice+personalDeductible; const contribTax=totalConcessional*n(s.contribTaxRate); const div293FromSuper=monthNum(date)===n(s.atoSettlementMonth)&&s.payDiv293FromSuper?n(priorTax.div293):0;
+   let cashPreBridge=cashOpening+salaryBase+bonus+savingsInterest+divCash+p1Rent+p2Rent+pensionCash+taxSettlementCash+loanProceeds+p1SaleProceeds+p2SaleProceeds-(payg+bonusPayg+preTaxPackage+salarySacrifice+personalDeductible+p1Costs+p2Costs+p1Interest+p1Principal+p2Interest+p2Principal+phiCash+living+travel+oneOffs+novatedPostTax+odInterest+div293Cash+atoQuarterlyInstalmentsCash+p2AcqOutflow+buyout);
+   let investmentLiquidation=0, superDrawdown=0, newOD=0, odRepay=0, excessInvestment=0;
+   if(s.autoLiquidateInvestments&&cashPreBridge<0){investmentLiquidation=Math.min(invOpening+divReinvest+capGrowth,-cashPreBridge); cashPreBridge+=investmentLiquidation;}
+   if(s.autoDrawSuper&&superAccess){const targetSuperDrawdown=(!work)?Math.max(0,supOpening*n(s.superDrawdownRate)/12):0; superDrawdown=Math.min(Math.max(0,supOpening+employerSG+salarySacrifice+personalDeductible-contribTax),Math.max(0,-cashPreBridge)+targetSuperDrawdown); cashPreBridge+=superDrawdown;}
+   if(odOpening>0&&cashPreBridge>n(s.minimumCashBuffer)){odRepay=Math.min(odOpening,Math.max(0,cashPreBridge-n(s.minimumCashBuffer))); cashPreBridge-=odRepay;}
+   if(cashPreBridge<0){newOD=-cashPreBridge; cashPreBridge=0;}
+   if(s.autoInvestExcessCash&&cashPreBridge>n(s.minimumCashBuffer)){excessInvestment=cashPreBridge-n(s.minimumCashBuffer); cashPreBridge-=excessInvestment;}
+   const p1LoanClosing=p1SaleProceeds?0:Math.max(0,p1OpeningLoan-p1Principal); const p2LoanClosing=p2SaleProceeds?0:Math.max(0,p2OpeningLoan-p2Principal);
+   const closingOffsets=allocateOffset(cashPreBridge,n(s.minimumCashBuffer),p1LoanClosing,p2LoanClosing,p1Active,p2Active,n(s.p1LoanRate),n(s.p2LoanRate));
+   const savingsClosingExOffset=Math.max(0,cashPreBridge-closingOffsets.total); const cashSplitCheck=cashPreBridge-savingsClosingExOffset-closingOffsets.total;
+   const invClosing=Math.max(0,invOpening+divReinvest+capGrowth-investmentLiquidation+excessInvestment); const supEarnings=Math.max(0,supOpening+employerSG+salarySacrifice+personalDeductible-contribTax-div293FromSuper)*n(s.superReturn)/12; const supClosing=Math.max(0,supOpening+employerSG+salarySacrifice+personalDeductible-contribTax-div293FromSuper+supEarnings-superDrawdown);
+   od=Math.max(0,odOpening+newOD-odRepay); cash=cashPreBridge; inv=invClosing; sup=supClosing; p1Loan=p1LoanClosing; p2Loan=p2LoanClosing; if(p1SaleProceeds)p1Sold=true; if(p2SaleProceeds)p2Sold=true;
+   arr.push({date,fy,age,work,superAccess,pensionAccess,idx,salaryBase,bonus,preTaxPackage,salarySacrifice,personalDeductible,taxableSalary,payg,bonusPayg,savingsInterest,divCash,divReinvest,capGrowth,p1Rent,p2Rent,pensionCash,p1Costs,p2Costs,p1Interest,p1Principal,p2Interest,p2Principal,phiCash,living,travel,oneOffs,novatedPostTax,odInterest,taxSettlementCash,div293Cash,atoQuarterlyInstalmentsCash,loanProceeds,p2AcqOutflow,buyout,cashOpening,openingOffset:openingOffsets.total,p1OpeningOffset:openingOffsets.p1,p2OpeningOffset:openingOffsets.p2,savingsOpeningExOffset,cashPreBridge,cashClosing:cash,closingOffset:closingOffsets.total,p1ClosingOffset:closingOffsets.p1,p2ClosingOffset:closingOffsets.p2,savingsClosingExOffset,cashSplitCheck,investmentLiquidation,superDrawdown,newOD,odRepay,excessInvestment,invOpening,invClosing,supOpening,employerSG,totalConcessional,contribTax,div293FromSuper,supEarnings,supClosing,p1Active,p1Value,p1LoanOpening:p1OpeningLoan,p1LoanClosing,p2Active,p2Value,p2LoanOpening:p2OpeningLoan,p2LoanClosing,p1MR,p2MR,p1Avail,p2Avail,taxableP1Rent,deductP1Costs,deductP1Interest,taxableP2Rent,deductP2Costs,deductP2Interest,netTaxablePassiveExBonus,taxablePassivePlusBonus,capitalGain,assessableAssets,deemedIncome,pensionAnnual,netWorth:cash+invClosing+supClosing+p1Value+p2Value-p1LoanClosing-p2LoanClosing-od,propertyEquity:p1Value+p2Value-p1LoanClosing-p2LoanClosing,odClosing:od,grossDebtClosing:p1LoanClosing+p2LoanClosing+od,netCashDebtClosing:cash-(p1LoanClosing+p2LoanClosing+od)});
+ }
+ return arr;}
+function allocateOffset(cash,buffer,p1Loan,p2Loan,p1Active,p2Active,p1Rate,p2Rate){let avail=Math.max(0,n(cash)-n(buffer)); let p1=0,p2=0; if(p1Active&&p2Active){if(p1Rate>=p2Rate){p1=Math.min(n(p1Loan),avail); p2=Math.min(n(p2Loan),Math.max(0,avail-p1));}else{p2=Math.min(n(p2Loan),avail); p1=Math.min(n(p1Loan),Math.max(0,avail-p2));}} else if(p1Active){p1=Math.min(n(p1Loan),avail);} else if(p2Active){p2=Math.min(n(p2Loan),avail);} return {p1,p2,total:p1+p2};}
+function pensionPayableAnnual(s,idx,assets,income,homeowner){const pp=pensionPolicy(s); const max=n(s.pensionAnnualMax||pp.maxAnnualSingle)*idx; const assetFree=homeowner?pp.homeownerAssetFree:pp.nonHomeownerAssetFree; const assetReduction=Math.max(0,n(assets)-assetFree)*pp.assetsTaperAnnual; const incomeReduction=Math.max(0,n(income)-pp.incomeFreeAnnual)*pp.incomeTaper; return Math.max(0,Math.min(max,max-assetReduction,max-incomeReduction));}
+function aggregateAnnual(monthly){const by={}; for(const m of monthly){const a=by[m.fy]||(by[m.fy]={fy:m.fy,months:0}); a.months++; for(const k of ['salaryBase','bonus','taxableSalary','payg','bonusPayg','savingsInterest','divCash','divReinvest','capGrowth','p1Rent','p2Rent','pensionCash','p1Costs','p2Costs','p1Interest','p1Principal','p2Interest','p2Principal','phiCash','living','travel','oneOffs','taxSettlementCash','div293Cash','atoQuarterlyInstalmentsCash','loanProceeds','p2AcqOutflow','buyout','investmentLiquidation','superDrawdown','newOD','excessInvestment','employerSG','totalConcessional','contribTax','div293FromSuper','supEarnings','taxableP1Rent','deductP1Costs','deductP1Interest','taxableP2Rent','deductP2Costs','deductP2Interest','netTaxablePassiveExBonus','taxablePassivePlusBonus','capitalGain'])a[k]=(a[k]||0)+n(m[k]); if(monthNum(m.date)===6||!a.juneDate){a.juneDate=m.date; a.cashJune=m.cashClosing; a.savingsCashJune=m.savingsClosingExOffset; a.offsetJune=m.closingOffset; a.invJune=m.invClosing; a.superJune=m.supClosing; a.propertyEquityJune=m.propertyEquity; a.netWorthJune=m.netWorth; a.p1LoanJune=m.p1LoanClosing; a.p2LoanJune=m.p2LoanClosing; a.odJune=m.odClosing; a.grossDebtJune=m.grossDebtClosing; a.netCashDebtJune=m.netCashDebtClosing; a.p1ValueJune=m.p1Value; a.p2ValueJune=m.p2Value;}}
+ return Object.fromEntries(Object.entries(by).sort((a,b)=>a[0]-b[0]));}
+function calcTaxMap(annual,s){const out={}; for(const a of Object.values(annual)){const deductibleSuper=n(a.personalDeductible||a.personalDeductibleSuper); const taxable=Math.max(0,n(a.taxableSalary)+n(a.taxablePassivePlusBonus)+n(a.capitalGain)-deductibleSuper); const baseTax=incomeTax(taxable,a.fy); const l=lito(taxable,baseTax); const med=medicare(taxable,s.medicareLevyRate); const surcharge=mls(s,taxable,n(s.totalRFBAAnnual)); const phiOffset=s.phiRebateViaPremium?0:n(s.phiPremiumGross)*phiRebateRate(s,n(s.currentAge)+(a.fy-(new Date(s.startDate+'T00:00:00Z').getUTCFullYear()+1))+1,taxable+n(s.totalRFBAAnnual)); const totalTax=Math.max(0,baseTax-l)+med+surcharge-phiOffset; const adjusted=taxable+n(s.totalRFBAAnnual)+n(a.totalConcessional); const d293=adjusted>n(s.div293Threshold)?n(s.div293Rate)*Math.min(n(a.totalConcessional),adjusted-n(s.div293Threshold)):0; const paygWithholding=n(a.payg)+n(a.bonusPayg); const instalmentsPaid=n(a.atoQuarterlyInstalmentsCash); const paygPaid=paygWithholding+instalmentsPaid; const settlement=totalTax-paygPaid; const quarterlyInstalmentsAssessed=Math.max(0,totalTax-paygWithholding); out[a.fy]={fy:a.fy,taxable,baseTax,lito:l,medicare:med,mls:surcharge,phiOffset,totalTax,payg:n(a.payg),bonusPayg:n(a.bonusPayg),paygWithholding,instalmentsPaid,paygPaid,settlementExDiv293:settlement,quarterlyInstalmentsAssessed,div293:d293,adjustedIncome:adjusted};} return out;}
+function runChecks(monthly,annual,taxMap,s=state){let checks=[]; const maxSplit=Math.max(...monthly.map(m=>Math.abs(n(m.cashSplitCheck)))); checks.push({name:'Monthly closing cash split ties',ok:maxSplit<0.01,detail:'Max variance '+fmtMoney2(maxSplit)}); const maxOffsetBreach=Math.max(...monthly.map(m=>Math.max(0,n(m.closingOffset)-Math.max(0,n(m.cashClosing)-n(s.minimumCashBuffer)), n(m.closingOffset)-(n(m.p1LoanClosing)+n(m.p2LoanClosing))))); checks.push({name:'Closing offset capped by cash above buffer and loan balance',ok:maxOffsetBreach<0.01,detail:'Max breach '+fmtMoney2(Math.max(0,maxOffsetBreach))}); const badP2=monthly.filter(m=>m.p2MR&&(Math.abs(n(m.deductP2Costs))+Math.abs(n(m.deductP2Interest))>0.01)).length; checks.push({name:'Main-residence Property 2 not deducted',ok:badP2===0,detail:badP2+' months with deductions while P2 is main residence'}); const badP1=monthly.filter(m=>m.p1MR&&(Math.abs(n(m.deductP1Costs))+Math.abs(n(m.deductP1Interest))>0.01)).length; checks.push({name:'Main-residence Property 1 not deducted',ok:badP1===0,detail:badP1+' months with deductions while P1 is main residence'}); const negCash=monthly.filter(m=>m.cashClosing<-0.01).length; checks.push({name:'No negative closing cash after bridges',ok:negCash===0,detail:negCash+' months negative'}); const savingsOk=monthly.every(m=>Math.abs(n(m.savingsInterest)-n(m.savingsOpeningExOffset)*n(s.savingsRate)/12)<0.05); checks.push({name:'Savings interest only on non-offset cash',ok:savingsOk,detail:savingsOk?'Formula holds':'One or more months fail'}); return checks;}
+
+function clamp(v,min,max){return Math.min(max,Math.max(min,n(v)));}
+function applyStress(base){
+  const s=clone(base);
+  if(!stress.enabled)return s;
+  const incomeFactor=Math.max(0,1+n(stress.incomeChangePct)/100);
+  const bonusFactor=Math.max(0,1+n(stress.bonusChangePct)/100);
+  s.caseName=(base.caseName||'Case')+' stress';
+  s.baseSalary=Math.max(0,n(s.baseSalary)*incomeFactor);
+  s.bonusCashYear1=Math.max(0,n(s.bonusCashYear1)*bonusFactor);
+  const rateShift=n(stress.loanRateShockPpt)/100;
+  s.p1LoanRate=Math.max(0,n(s.p1LoanRate)+rateShift);
+  s.p2LoanRate=Math.max(0,n(s.p2LoanRate)+rateShift);
+  s.overdraftRate=Math.max(0,n(s.overdraftRate)+rateShift);
+  s.savingsRate=Math.max(0,n(s.savingsRate)+Math.max(0,rateShift*0.5));
+  s.inflation=Math.max(-0.05,n(s.inflation)+n(stress.inflationShockPpt)/100);
+  const costFactor=Math.max(0,1+n(stress.livingCostChangePct)/100);
+  s.livingCosts=n(s.livingCosts)*costFactor;
+  s.travel=n(s.travel)*costFactor;
+  s.phiPremiumGross=n(s.phiPremiumGross)*costFactor;
+  s.p1HoldingCosts=n(s.p1HoldingCosts)*costFactor;
+  s.p2HoldingCosts=n(s.p2HoldingCosts)*costFactor;
+  s.p1ManagementCosts=n(s.p1ManagementCosts)*costFactor;
+  s.p2ManagementCosts=n(s.p2ManagementCosts)*costFactor;
+  const propertyShift=n(stress.propertyGrowthShockPpt)/100;
+  s.p1Growth=Math.max(-0.50,n(s.p1Growth)+propertyShift);
+  s.p2Growth=Math.max(-0.50,n(s.p2Growth)+propertyShift);
+  const investmentShift=n(stress.investmentReturnShockPpt)/100;
+  s.investmentCapitalGrowth=Math.max(-0.95,n(s.investmentCapitalGrowth)+investmentShift);
+  const superShift=n(stress.superReturnShockPpt)/100;
+  s.superReturn=Math.max(-0.95,n(s.superReturn)+superShift);
+  const vacancyFactor=clamp((12-n(stress.rentVacancyMonths))/12,0,1);
+  s.p1RentAnnual=n(s.p1RentAnnual)*vacancyFactor;
+  s.p2RentAnnual=n(s.p2RentAnnual)*vacancyFactor;
+  s.retirementAge=clamp(n(s.retirementAge)+n(stress.retirementAgeShiftYears),n(s.currentAge),n(s.endAge));
+  const cost=Math.max(0,n(stress.immediateCashCost));
+  if(cost>0){
+    if(n(s.openingCash)>=cost){s.openingCash=n(s.openingCash)-cost;}
+    else{const shortfall=cost-n(s.openingCash); s.openingCash=0; s.openingOverdraft=n(s.openingOverdraft)+shortfall;}
+  }
+  return s;
+}
+function stressDeltaClass(v){return n(v)<-0.01?'negative':(n(v)>0.01?'positive':'');}
+function minMonthlyCash(result,months){const sample=result.monthly.slice(0,months||result.monthly.length); return Math.min(...sample.map(m=>n(m.cashClosing)));}
+function firstRetirementFY(result,s){const row=result.monthly.find(m=>m.age>=n(s.retirementAge)); return row?row.fy:null;}
+function annualRowForFY(result,fy){return fy?Object.values(result.annual).find(a=>a.fy===fy):null;}
+function renderStressPanel(){
+  renderStressControls();
+  const root=document.getElementById('stressResults');
+  if(!root)return;
+  if(!stress.enabled||!stressLatest){root.innerHTML='<div class="small" style="margin-top:12px">Stress test is off. Turn it on to compare base case versus a downside or choice scenario.</div>';return;}
+  const baseYears=Object.values(latest.annual), stressYears=Object.values(stressLatest.annual);
+  const baseLast=baseYears[baseYears.length-1], stressLast=stressYears[stressYears.length-1];
+  const baseFirst=baseYears[0], stressFirst=stressYears[0];
+  const baseTax=latest.taxMap[baseFirst.fy]||{}, stressTax=stressLatest.taxMap[stressFirst.fy]||{};
+  const baseMin5=minMonthlyCash(latest,60), stressMin5=minMonthlyCash(stressLatest,60);
+  const baseRetFY=firstRetirementFY(latest,state), stressRetFY=firstRetirementFY(stressLatest,stressState);
+  const baseRet=annualRowForFY(latest,baseRetFY), stressRet=annualRowForFY(stressLatest,stressRetFY);
+  const cards=[
+    ['Final net worth',stressLast.netWorthJune,n(stressLast.netWorthJune)-n(baseLast.netWorthJune)],
+    ['Minimum cash, first 5 years',stressMin5,n(stressMin5)-n(baseMin5)],
+    ['First FY tax settlement',stressTax.settlementExDiv293,n(stressTax.settlementExDiv293)-n(baseTax.settlementExDiv293)],
+    ['Net worth at retirement FY',stressRet?stressRet.netWorthJune:0,stressRet&&baseRet?n(stressRet.netWorthJune)-n(baseRet.netWorthJune):0]
+  ];
+  const checks=stressLatest.checks.filter(c=>c.ok).length+' / '+stressLatest.checks.length;
+  const cardHtml=cards.map(c=>'<div class="impact-card"><div class="label">'+esc(c[0])+'</div><div class="value">'+fmtMoney(c[1])+'</div><div class="delta '+stressDeltaClass(c[2])+'">Delta: '+fmtMoney(c[2])+'</div></div>').join('');
+  const rows=[
+    ['Final FY',baseLast.fy,stressLast.fy,''],
+    ['Final net worth',fmtMoney(baseLast.netWorthJune),fmtMoney(stressLast.netWorthJune),fmtMoney(n(stressLast.netWorthJune)-n(baseLast.netWorthJune))],
+    ['First 5-year minimum cash',fmtMoney(baseMin5),fmtMoney(stressMin5),fmtMoney(n(stressMin5)-n(baseMin5))],
+    ['First FY tax settlement ex Div293',fmtMoney(baseTax.settlementExDiv293),fmtMoney(stressTax.settlementExDiv293),fmtMoney(n(stressTax.settlementExDiv293)-n(baseTax.settlementExDiv293))],
+    ['Stress validation checks','',checks,'']
+  ];
+  root.innerHTML='<div class="impact-grid">'+cardHtml+'</div><div style="margin-top:12px">'+table(['Metric','Base case','Stress case','Delta'],rows)+'</div>';
+}
+function renderStressControls(){
+  const root=document.getElementById('stressControls');
+  if(!root)return;
+  const fields=[
+    ['enabled','Apply stress test','checkbox'],
+    ['preset','Preset','preset'],
+    ['incomeChangePct','Salary change (%)','number'],
+    ['bonusChangePct','Bonus change (%)','number'],
+    ['loanRateShockPpt','Loan-rate shock (percentage points)','number'],
+    ['inflationShockPpt','Inflation shock (percentage points)','number'],
+    ['livingCostChangePct','Living/travel/cost change (%)','number'],
+    ['propertyGrowthShockPpt','Property growth shock (percentage points)','number'],
+    ['investmentReturnShockPpt','Investment return shock (percentage points)','number'],
+    ['superReturnShockPpt','Super return shock (percentage points)','number'],
+    ['rentVacancyMonths','Rental vacancy months per year','number'],
+    ['retirementAgeShiftYears','Retirement age shift (years)','number'],
+    ['immediateCashCost','Immediate one-off cash cost ($)','number']
+  ];
+  root.innerHTML='<div class="stress-grid">'+fields.map(f=>stressFieldHtml(f[0],f[1],f[2])).join('')+'</div>';
+  root.querySelectorAll('[data-stress-key]').forEach(el=>el.addEventListener('change',onStressInput));
+}
+function stressTooltipHtml(key,label){
+  const tipId='stress_tip_'+key;
+  return '<div class="tooltipWrap"><button type="button" class="helpButton" aria-label="Explain '+esc(label)+'" aria-describedby="'+tipId+'">?</button><div id="'+tipId+'" class="helpText" role="tooltip"><strong>'+esc(label)+'</strong><span>'+esc(STRESS_HELP[key]||'Stress-test input used only for the stress comparison case.')+'</span></div></div>';
+}
+function stressFieldHtml(key,label,type){
+  const tip=stressTooltipHtml(key,label);
+  const labelHtml='<div class="stressLabelRow"><label for="stress_'+key+'">'+esc(label)+'</label>'+tip+'</div>';
+  if(type==='checkbox')return '<div class="stressField">'+labelHtml+'<select id="stress_'+key+'" data-stress-key="'+key+'" aria-describedby="stress_tip_'+key+'"><option value="true" '+(stress.enabled?'selected':'')+'>Yes</option><option value="false" '+(!stress.enabled?'selected':'')+'>No</option></select></div>';
+  if(type==='preset')return '<div class="stressField">'+labelHtml+'<select id="stress_'+key+'" data-stress-key="'+key+'" aria-describedby="stress_tip_'+key+'">'+Object.entries(STRESS_PRESETS).map(([k,v])=>'<option value="'+k+'" '+(stress.preset===k?'selected':'')+'>'+esc(v.label)+'</option>').join('')+'</select></div>';
+  const step=key==='immediateCashCost'?'1000':'0.1';
+  return '<div class="stressField">'+labelHtml+'<input id="stress_'+key+'" data-stress-key="'+key+'" aria-describedby="stress_tip_'+key+'" type="number" inputmode="decimal" step="'+step+'" value="'+esc(stress[key])+'"></div>';
+}
+function onStressInput(e){
+  const k=e.target.dataset.stressKey;
+  if(k==='enabled')stress.enabled=e.target.value==='true';
+  else if(k==='preset'){
+    stress.preset=e.target.value;
+    const preset=STRESS_PRESETS[stress.preset]?.values||{};
+    const currentEnabled=stress.enabled;
+    stress={...stress, incomeChangePct:0, bonusChangePct:0, loanRateShockPpt:0, inflationShockPpt:0, livingCostChangePct:0, propertyGrowthShockPpt:0, investmentReturnShockPpt:0, superReturnShockPpt:0, rentVacancyMonths:0, retirementAgeShiftYears:0, immediateCashCost:0, ...preset};
+    if(stress.preset==='custom')stress.enabled=currentEnabled;
+  } else stress[k]=Number(e.target.value);
+  recalc();
+}
+function applyFontScale(){fontScale=clamp(fontScale,0.85,1.3); document.documentElement.style.setProperty('--font-size',(15.5*fontScale).toFixed(2)+'px'); localStorage.setItem('fp_font_scale',String(fontScale));}
+function setupFontControls(){applyFontScale(); const down=document.getElementById('fontDownBtn'), up=document.getElementById('fontUpBtn'), reset=document.getElementById('fontResetBtn'); if(down)down.addEventListener('click',()=>{fontScale-=0.05;applyFontScale();}); if(up)up.addEventListener('click',()=>{fontScale+=0.05;applyFontScale();}); if(reset)reset.addEventListener('click',()=>{fontScale=1;applyFontScale();});}
+
+function fieldLabelText(key){return LABELS[key]||key;}
+function fieldHelpText(key){return FIELD_HELP[key] || 'Planning input used by the financial model. Review the label, unit and surrounding section before changing it.';}
+function monthlyInputHint(key){
+  if(key==='livingCosts')return '<strong>'+fmtMoney2(n(state.livingCosts)/12)+'</strong> / month used in Year 1 monthly living-cost cash flow.';
+  if(key==='travel')return '<strong>'+fmtMoney2(n(state.travel)/12)+'</strong> / month used in Year 1 monthly travel cash flow.';
+  if(key==='oneOffs')return '<strong>'+fmtMoney2(n(state.oneOffs)/12)+'</strong> / month used in Year 1 monthly recurring one-off / discretionary cash flow.';
+  if(key==='phiPremiumGross'){
+    const adjustedIncomeForPhi=n(state.baseSalary)+n(state.bonusCashYear1)+n(state.otherRFBA)+n(state.totalRFBAAnnual);
+    const rebate=phiRebateRate(state,n(state.currentAge),adjustedIncomeForPhi);
+    return '<strong>'+fmtMoney2(n(state.phiPremiumGross)/12*(1-rebate))+'</strong> / month estimated cash premium after rebate in Year 1. Gross input equals '+fmtMoney2(n(state.phiPremiumGross)/12)+' / month.';
+  }
+  if(key==='novatedPostTaxAnnual')return '<strong>'+fmtMoney2(n(state.novatedPostTaxAnnual)/12)+'</strong> / month used only during the active novated-lease term.';
+  return '';
+}
+function renderInputs(){
+  const root=document.getElementById('inputs');
+  root.innerHTML='';
+  for(const [group,keys] of INPUT_GROUPS){
+    const box=document.createElement('details');
+    box.className='group inputGroup';
+    const h=document.createElement('summary');
+    const title=document.createElement('span');
+    title.textContent=group;
+    const meta=document.createElement('span');
+    meta.className='groupMeta';
+    meta.textContent=keys.length+' fields';
+    h.appendChild(title);
+    h.appendChild(meta);
+    box.appendChild(h);
+    const inside=document.createElement('div');
+    inside.className='inside inputGroupInside';
+    const matrix=document.createElement('div');
+    matrix.className='inputMatrix';
+    const header=document.createElement('div');
+    header.className='matrixHeader';
+    header.innerHTML='<div>Assumption</div><div>Input</div><div>Help</div>';
+    matrix.appendChild(header);
+    for(const key of keys){
+      const row=document.createElement('div');
+      row.className='matrixRow';
+      const lab=document.createElement('label');
+      lab.className='matrixLabel';
+      lab.textContent=fieldLabelText(key);
+      lab.title=fieldLabelText(key);
+      lab.htmlFor='inp_'+key;
+      const control=document.createElement('div');
+      control.className='matrixControl';
+      let inp;
+      if(boolFields.has(key)){
+        inp=document.createElement('select');
+        inp.innerHTML='<option value="true">Yes</option><option value="false">No</option>';
+        inp.value=String(!!state[key]);
+      } else if(enumFields[key]){
+        inp=document.createElement('select');
+        inp.innerHTML=enumFields[key].map(v=>'<option value="'+v+'">'+v+'</option>').join('');
+        inp.value=state[key]||enumFields[key][0];
+      } else {
+        inp=document.createElement('input');
+        inp.type=dateFields.has(key)?'date':'number';
+        if(!dateFields.has(key))inp.inputMode='decimal';
+        if(pctFields.has(key)) {inp.step='0.01'; inp.value=Number((n(state[key])*100).toFixed(4));}
+        else if(moneyFields.has(key)) {inp.step='100'; inp.value=n(state[key]);}
+        else {inp.step='1'; inp.value=state[key]??'';}
+        if(dateFields.has(key)) inp.value=state[key]||'';
+      }
+      inp.id='inp_'+key;
+      inp.dataset.key=key;
+      inp.setAttribute('aria-describedby','tip_'+key);
+      inp.addEventListener('change',onInput);
+      if(!boolFields.has(key) && !enumFields[key]) inp.addEventListener('input',onInput);
+      control.appendChild(inp);
+      const calcText=monthlyInputHint(key);
+      if(calcText){
+        const calc=document.createElement('div');
+        calc.className='matrixCalc';
+        calc.dataset.calcKey=key;
+        calc.innerHTML=calcText;
+        control.appendChild(calc);
+      }
+      const help=document.createElement('div');
+      help.className='tooltipWrap';
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='helpButton';
+      btn.textContent='?';
+      btn.setAttribute('aria-label','Explain '+(LABELS[key]||key));
+      btn.setAttribute('aria-describedby','tip_'+key);
+      btn.addEventListener('click',e=>{e.preventDefault(); btn.focus();});
+      const tip=document.createElement('div');
+      tip.className='helpText';
+      tip.id='tip_'+key;
+      tip.setAttribute('role','tooltip');
+      const strong=document.createElement('strong');
+      strong.textContent=fieldLabelText(key);
+      const text=document.createElement('span');
+      text.textContent=fieldHelpText(key);
+      tip.appendChild(strong);
+      tip.appendChild(text);
+      help.appendChild(btn);
+      help.appendChild(tip);
+      row.appendChild(lab);
+      row.appendChild(control);
+      row.appendChild(help);
+      matrix.appendChild(row);
+    }
+    inside.appendChild(matrix);
+    box.appendChild(inside);
+    root.appendChild(box);
+  }
+}
+function onInput(e){const k=e.target.dataset.key; if(boolFields.has(k))state[k]=e.target.value==='true'; else if(enumFields[k])state[k]=e.target.value; else if(dateFields.has(k))state[k]=e.target.value||null; else if(pctFields.has(k))state[k]=Number(e.target.value)/100; else state[k]=Number(e.target.value); recalc();}
+function recalc(){latest=runScenario(state); stressState=applyStress(state); stressLatest=stress.enabled?runScenario(stressState):null; renderAll();}
+function renderAll(){renderWarnings(); renderKpis(); renderChart(); renderView(activeView); renderStressPanel(); updateMonthlyInputHints();}
+function updateMonthlyInputHints(){document.querySelectorAll('.matrixCalc[data-calc-key]').forEach(el=>{const key=el.dataset.calcKey; const html=monthlyInputHint(key); if(html)el.innerHTML=html;});}
+function renderWarnings(){const root=document.getElementById('warningArea'); const bad=latest.checks.filter(c=>!c.ok); let warnings=[]; if(bad.length)warnings.push('Validation exceptions: '+bad.map(x=>x.name).join('; ')); if(state.p2Included&&state.switchMainResidenceToP2)warnings.push('Property 2 is treated as main residence from '+state.mainResidenceSwitchDate+'; P2 interest and holding costs are cash outflows but not tax deductions.'); if(!state.p1DeductibilityGate)warnings.push('Property 1 genuine-availability gate is off. Deductions still require the property not to be a main residence.'); root.innerHTML=warnings.map(w=>'<div class="warnbox">'+esc(w)+'</div>').join('');}
+function renderKpis(){const years=Object.values(latest.annual); const first=years[0], last=years[years.length-1]; const tax=latest.taxMap[first.fy]||{}; const k=[['Net worth, final year',fmtMoney(last.netWorthJune),'FY '+last.fy],['Cash incl offset, next June',fmtMoney(first.cashJune),'split: '+fmtMoney(first.savingsCashJune)+' savings / '+fmtMoney(first.offsetJune)+' offset'],['Tax settlement, first FY',fmtMoney(tax.settlementExDiv293),'ex Division 293'],['Validation checks',latest.checks.filter(c=>c.ok).length+' / '+latest.checks.length,'pass count']]; if(stressLatest){const sYears=Object.values(stressLatest.annual); const sLast=sYears[sYears.length-1]; k.push(['Stress net worth delta',fmtMoney(n(sLast.netWorthJune)-n(last.netWorthJune)),STRESS_PRESETS[stress.preset]?.label||'Custom stress']);} document.getElementById('kpis').innerHTML=k.map(x=>'<div class="kpi"><div class="label">'+esc(x[0])+'</div><div class="val">'+esc(x[1])+'</div><div class="note">'+esc(x[2])+'</div></div>').join('');}
+function renderChart(){
+  renderCashDebtChart();
+  const years=Object.values(latest.annual).filter((_,i)=>i%2===0 || i<5);
+  const data=years.map(y=>({x:String(y.fy), fy:n(y.fy), y:n(y.netWorthJune)}));
+  const target=document.getElementById('chartNetWorth');
+  if(target){target.innerHTML=lineSvg(data,'Net worth by financial year',chartEvents(data)); attachChartTooltips(target);}
+}
+function chartEvents(data){
+  if(!data||!data.length)return [];
+  const events=[];
+  const addDate=(label,date)=>{if(date){const fy=fyOf(date); if(data.some(d=>Math.abs(n(d.fy)-fy)<=1))events.push({label,fy});}};
+  const addAge=(label,age)=>{const m=firstMonthAtAge(age); if(m)events.push({label,fy:m.fy});};
+  addAge('Retirement',state.retirementAge);
+  addAge('Super access',state.superAccessAge);
+  if(state.includePension)addAge('Age Pension',state.pensionAge);
+  if(state.p2Included)addDate('P2 purchase',state.p2AcqDate);
+  if(state.switchMainResidenceToP2)addDate('Main residence switch',state.mainResidenceSwitchDate);
+  if(state.p1DeductibilityGate)addDate('P1 available for rent',state.p1AvailableForRentDate);
+  if(state.p1RentStart)addDate('P1 rent starts',state.p1RentStart);
+  if(state.novatedStart)addDate('Novated lease starts',state.novatedStart);
+  if(state.novatedStart&&n(state.novatedTermMonths)>0)addDate('Novated lease ends',ymd(addMonths(state.novatedStart,n(state.novatedTermMonths))));
+  if(state.p1SaleEnabled)addDate('P1 sale',state.p1SaleMonth);
+  if(state.p2SaleEnabled)addDate('P2 sale',state.p2SaleMonth);
+  const by={};
+  for(const ev of events){if(!by[ev.fy])by[ev.fy]=[]; if(!by[ev.fy].includes(ev.label))by[ev.fy].push(ev.label);}
+  return Object.entries(by).map(([fy,labels])=>({fy:n(fy),label:labels.slice(0,3).join(' / ')}));
+}
+function renderCashDebtChart(){
+  const target=document.getElementById('chartCashDebt');
+  if(!target)return;
+  const years=Object.values(latest.annual).filter((_,i)=>i%2===0 || i<5);
+  const series=[
+    {name:'Cash incl offset',stroke:'#1f4e79',dash:'',values:years.map(y=>({x:String(y.fy),fy:n(y.fy),y:n(y.cashJune)}))},
+    {name:'Gross debt',stroke:'#b42318',dash:'5 4',values:years.map(y=>({x:String(y.fy),fy:n(y.fy),y:n(y.grossDebtJune||0)}))},
+    {name:'Net cash / debt',stroke:'#067647',dash:'2 3',values:years.map(y=>({x:String(y.fy),fy:n(y.fy),y:n(y.netCashDebtJune||0)}))}
+  ];
+  target.innerHTML=multiLineSvg(series,'Cash, gross debt and net cash / debt by financial year'); attachChartTooltips(target);
+}
+function lineSvg(data,title,events=[]){
+  const w=960,h=320;
+  const pLeft=54,pRight=34,pTop=78,pBottom=50;
+  if(!data.length)return '';
+  const ys=data.map(d=>d.y);
+  const min=Math.min(...ys,0), max=Math.max(...ys,1);
+  const x=(i)=>pLeft+(data.length===1?0:i*(w-pLeft-pRight)/(data.length-1));
+  const y=(v)=>h-pBottom-(v-min)/(max-min||1)*(h-pTop-pBottom);
+  const path=data.map((d,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(d.y).toFixed(1)).join(' ');
+  const ticks=[0,.25,.5,.75,1].map(t=>min+(max-min)*t);
+  const markerLines=events.map((ev,j)=>{
+    let idx=0; let best=1e9;
+    data.forEach((d,i)=>{const dist=Math.abs(n(d.fy||d.x)-n(ev.fy)); if(dist<best){best=dist;idx=i;}});
+    const xx=x(idx); const yy=42+(j%3)*15;
+    return '<g><title>'+esc('Event: '+ev.label+'\nFY '+data[idx].x)+'</title><line x1="'+xx.toFixed(1)+'" y1="'+pTop+'" x2="'+xx.toFixed(1)+'" y2="'+(h-pBottom)+'" stroke="#9a3412" stroke-dasharray="3 3" opacity="0.7"/><text class="chartEvent" x="'+(xx+4).toFixed(1)+'" y="'+yy+'">'+esc(ev.label)+'</text></g>';
+  }).join('');
+  const hoverBands=data.map((d,i)=>{
+    const xx=x(i); const prev=i===0?pLeft:x(i-1); const next=i===data.length-1?w-pRight:x(i+1); const left=i===0?pLeft:(prev+xx)/2; const right=i===data.length-1?w-pRight:(xx+next)/2;
+    const titleText='FY '+d.x+'\nNet worth: '+fmtMoney2(d.y);
+    return '<g class="chartHoverBand" tabindex="0" data-chart-tooltip="'+esc(titleText)+'"><title>'+esc(titleText)+'</title><rect x="'+left.toFixed(1)+'" y="'+pTop+'" width="'+Math.max(6,right-left).toFixed(1)+'" height="'+(h-pTop-pBottom)+'"/><line class="chartHoverLine" x1="'+xx.toFixed(1)+'" y1="'+pTop+'" x2="'+xx.toFixed(1)+'" y2="'+(h-pBottom)+'"/><circle class="chartHoverDot" cx="'+xx.toFixed(1)+'" cy="'+y(d.y).toFixed(1)+'" r="4"/></g>';
+  }).join('');
+  const points=data.map((d,i)=>'<circle class="chartDataPoint" cx="'+x(i).toFixed(1)+'" cy="'+y(d.y).toFixed(1)+'" r="3.1" stroke="#1f4e79"><title>'+esc('FY '+d.x+'\nNet worth: '+fmtMoney2(d.y))+'</title></circle>').join('');
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="100%" role="img" aria-label="'+esc(title)+'"><text class="chartTitle" x="18" y="24">'+esc(title)+'</text><line x1="'+pLeft+'" y1="'+(h-pBottom)+'" x2="'+(w-pRight)+'" y2="'+(h-pBottom)+'" stroke="#d0d5dd"/><line x1="'+pLeft+'" y1="'+pTop+'" x2="'+pLeft+'" y2="'+(h-pBottom)+'" stroke="#d0d5dd"/>'+ticks.map(t=>'<line x1="'+pLeft+'" x2="'+(w-pRight)+'" y1="'+y(t)+'" y2="'+y(t)+'" stroke="#eef2f6"/><text x="8" y="'+(y(t)+4)+'" font-size="12" fill="#667085">'+shortMoney(t)+'</text>').join('')+markerLines+'<path d="'+path+'" fill="none" stroke="#1f4e79" stroke-width="3"/>'+points+hoverBands+data.map((d,i)=>i%3===0?'<text x="'+(x(i)-12)+'" y="'+(h-14)+'" font-size="11" fill="#667085">'+esc(d.x)+'</text>':'').join('')+'</svg>';
+}
+function multiLineSvg(series,title){
+  const w=960,h=320;
+  const pLeft=54,pRight=34,pTop=78,pBottom=50;
+  const points=series.flatMap(s=>s.values||[]);
+  if(!points.length)return '';
+  const vals=points.map(d=>n(d.y));
+  const min=Math.min(...vals,0), max=Math.max(...vals,1);
+  const count=Math.max(...series.map(s=>(s.values||[]).length));
+  const x=(i)=>pLeft+(count===1?0:i*(w-pLeft-pRight)/(count-1));
+  const y=(v)=>h-pBottom-(v-min)/(max-min||1)*(h-pTop-pBottom);
+  const ticks=[0,.25,.5,.75,1].map(t=>min+(max-min)*t);
+  const zeroLine=(min<0&&max>0)?'<line x1="'+pLeft+'" x2="'+(w-pRight)+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="#98a2b3" stroke-dasharray="4 4"/>':'';
+  const legendX=w-pRight-410, legendY=14, legendW=400, legendH=44;
+  const legend='<g class="chartLegendFloating"><rect class="chartLegendBox" x="'+legendX+'" y="'+legendY+'" rx="8" ry="8" width="'+legendW+'" height="'+legendH+'"/>'+series.map((s,si)=>{const lx=legendX+14+si*130; const ly=legendY+23; return '<line x1="'+lx+'" y1="'+ly+'" x2="'+(lx+28)+'" y2="'+ly+'" stroke="'+s.stroke+'" stroke-width="2.8" stroke-dasharray="'+(s.dash||'')+'"/><text class="chartLegendLabel" x="'+(lx+34)+'" y="'+(ly+5)+'">'+esc(s.name)+'</text>';}).join('')+'</g>';
+  const paths=series.map((s)=>{const vals=s.values||[]; const path=vals.map((d,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(d.y).toFixed(1)).join(' '); return '<path d="'+path+'" fill="none" stroke="'+s.stroke+'" stroke-width="2.8" stroke-dasharray="'+(s.dash||'')+'"/>'+vals.map((d,i)=>'<circle class="chartDataPoint" cx="'+x(i).toFixed(1)+'" cy="'+y(d.y).toFixed(1)+'" r="3" stroke="'+s.stroke+'"><title>'+esc('FY '+d.x+'\n'+s.name+': '+fmtMoney2(d.y))+'</title></circle>').join('');}).join('');
+  const hoverBands=(series[0].values||[]).map((d,i)=>{
+    const xx=x(i); const prev=i===0?pLeft:x(i-1); const next=i===count-1?w-pRight:x(i+1); const left=i===0?pLeft:(prev+xx)/2; const right=i===count-1?w-pRight:(xx+next)/2;
+    const titleLines=['FY '+d.x,...series.map(s=>s.name+': '+fmtMoney2((s.values||[])[i]?.y))];
+    const dots=series.map(s=>{const v=(s.values||[])[i]; if(!v)return ''; return '<circle class="chartHoverDot" cx="'+xx.toFixed(1)+'" cy="'+y(v.y).toFixed(1)+'" r="4"/>';}).join('');
+    return '<g class="chartHoverBand" tabindex="0" data-chart-tooltip="'+esc(titleLines.join('\n'))+'"><title>'+esc(titleLines.join('\n'))+'</title><rect x="'+left.toFixed(1)+'" y="'+pTop+'" width="'+Math.max(6,right-left).toFixed(1)+'" height="'+(h-pTop-pBottom)+'"/><line class="chartHoverLine" x1="'+xx.toFixed(1)+'" y1="'+pTop+'" x2="'+xx.toFixed(1)+'" y2="'+(h-pBottom)+'"/>'+dots+'</g>';
+  }).join('');
+  const labels=(series[0].values||[]).map((d,i)=>i%3===0?'<text x="'+(x(i)-12)+'" y="'+(h-14)+'" font-size="11" fill="#667085">'+esc(d.x)+'</text>':'').join('');
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="100%" role="img" aria-label="'+esc(title)+'"><text class="chartTitle" x="18" y="24">'+esc(title)+'</text>'+legend+'<line x1="'+pLeft+'" y1="'+(h-pBottom)+'" x2="'+(w-pRight)+'" y2="'+(h-pBottom)+'" stroke="#d0d5dd"/><line x1="'+pLeft+'" y1="'+pTop+'" x2="'+pLeft+'" y2="'+(h-pBottom)+'" stroke="#d0d5dd"/>'+ticks.map(t=>'<line x1="'+pLeft+'" x2="'+(w-pRight)+'" y1="'+y(t)+'" y2="'+y(t)+'" stroke="#eef2f6"/><text x="8" y="'+(y(t)+4)+'" font-size="12" fill="#667085">'+shortMoney(t)+'</text>').join('')+zeroLine+paths+hoverBands+labels+'</svg>';
+}
+
+function ensureChartTooltip(container){
+  let tip=container.querySelector('.chartTooltip');
+  if(!tip){tip=document.createElement('div'); tip.className='chartTooltip'; container.appendChild(tip);}
+  return tip;
+}
+function chartTooltipPosition(container,tip,el,event){
+  const cr=container.getBoundingClientRect();
+  let clientX=event&&Number.isFinite(event.clientX)?event.clientX:null;
+  let clientY=event&&Number.isFinite(event.clientY)?event.clientY:null;
+  if((clientX===null||clientY===null)&&el&&el.getBoundingClientRect){
+    const er=el.getBoundingClientRect();
+    clientX=er.left+er.width/2;
+    clientY=er.top+er.height/2;
+  }
+  if(clientX===null)clientX=cr.left+Math.min(cr.width-20,80);
+  if(clientY===null)clientY=cr.top+40;
+  let left=clientX-cr.left+12;
+  let top=clientY-cr.top+12;
+  const tw=tip.offsetWidth||260;
+  const th=tip.offsetHeight||90;
+  if(left+tw>cr.width-8)left=Math.max(8,cr.width-tw-8);
+  if(top+th>cr.height-8)top=Math.max(8,top-th-24);
+  tip.style.left=left+'px';
+  tip.style.top=top+'px';
+}
+function chartTooltipShow(container,el,event){
+  const text=el&&el.getAttribute('data-chart-tooltip');
+  if(!text){chartTooltipHide(container); return;}
+  const tip=ensureChartTooltip(container);
+  tip.textContent=text;
+  tip.classList.add('visible');
+  chartTooltipPosition(container,tip,el,event);
+}
+function chartTooltipHide(container){
+  const tip=container&&container.querySelector('.chartTooltip');
+  if(tip)tip.classList.remove('visible');
+}
+function attachChartTooltips(container){
+  if(!container)return;
+  ensureChartTooltip(container);
+  if(container.dataset.tooltipBound==='1')return;
+  container.dataset.tooltipBound='1';
+  container.addEventListener('pointermove',function(e){
+    const el=e.target.closest?e.target.closest('[data-chart-tooltip]'):null;
+    if(!el||!container.contains(el)){chartTooltipHide(container); return;}
+    chartTooltipShow(container,el,e);
+  });
+  container.addEventListener('pointerleave',function(){chartTooltipHide(container);});
+  container.addEventListener('focusin',function(e){
+    const el=e.target.closest?e.target.closest('[data-chart-tooltip]'):null;
+    if(el&&container.contains(el))chartTooltipShow(container,el,e);
+  });
+  container.addEventListener('focusout',function(){chartTooltipHide(container);});
+  container.addEventListener('click',function(e){
+    const el=e.target.closest?e.target.closest('[data-chart-tooltip]'):null;
+    if(el&&container.contains(el))chartTooltipShow(container,el,e);
+  });
+}
+function shortMoney(v){v=n(v); const sign=v<0?'-':''; v=Math.abs(v); if(v>=1e6)return sign+'$'+(v/1e6).toFixed(1)+'m'; if(v>=1e3)return sign+'$'+(v/1e3).toFixed(0)+'k'; return sign+'$'+v.toFixed(0);}
+function renderView(view){activeView=view; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view)); if(view==='plan')renderPlanSummary(); else if(view==='dashboard')renderWorkbookDashboard(); else if(view==='annual')renderAnnual(); else if(view==='tax')renderTax(); else if(view==='lifestyle')renderLifestyle(); else if(view==='monthly')renderMonthly(); else renderChecks();}
+function table(headers,rows){return '<div class="tablewrap"><table><thead><tr>'+headers.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
+function annualYears(){return Object.values(latest.annual).sort((a,b)=>a.fy-b.fy);}
+function horizonYears(){const years=annualYears(); return [0,1,2,4,9,14].map((idx,i)=>({label:['Year 1','Year 2','Year 3','Year 5','Year 10','Year 15'][i],a:years[idx]})).filter(x=>x.a);}
+function firstMonthAtAge(age){return latest.monthly.find(m=>n(m.age)>=n(age))||latest.monthly[latest.monthly.length-1];}
+function milestoneRows(){const rows=[['Metric','Current','Retirement','Age Pension','Plan end']]; const points=[latest.monthly[0],firstMonthAtAge(state.retirementAge),firstMonthAtAge(state.pensionAge),latest.monthly[latest.monthly.length-1]]; const add=(label,fn)=>rows.push([label,...points.map(fn)]); add('Date',m=>esc(m.date)); add('Age',m=>fmtNum(m.age)); add('Cash incl offset',m=>fmtMoney(m.cashClosing)); add('Savings cash ex offset',m=>fmtMoney(m.savingsClosingExOffset)); add('Offset balance',m=>fmtMoney(m.closingOffset)); add('Investments',m=>fmtMoney(m.invClosing)); add('Super',m=>fmtMoney(m.supClosing)); add('Property equity',m=>fmtMoney(m.propertyEquity)); add('Overdraft',m=>fmtMoney(m.odClosing)); add('Net worth',m=>fmtMoney(m.netWorth)); return rows;}
+function renderPlanSummary(){const years=annualYears(); const first=years[0]; const current=latest.monthly[0]; const retire=firstMonthAtAge(state.retirementAge); const pension=firstMonthAtAge(state.pensionAge); const failed=latest.checks.filter(c=>!c.ok).length; const firstTax=latest.taxMap[first.fy]||{}; const cards=[['Current net worth',fmtMoney(current.netWorth),'Month 1 balance sheet'],['Current closing cash',fmtMoney(current.cashClosing),'Buffer '+fmtMoney(state.minimumCashBuffer)],['Years to retirement',fmtNum(Math.max(0,n(state.retirementAge)-n(state.currentAge))),'Retirement age '+fmtNum(state.retirementAge)],['First FY tax settlement',fmtMoney(firstTax.settlementExDiv293),'ex Division 293'],['Validation checks failed',String(failed),failed?'Review checks tab':'No failed checks'],['Plan-end net worth',fmtMoney(years[years.length-1].netWorthJune),'FY '+years[years.length-1].fy],['Retirement net worth',fmtMoney(retire.netWorth),'At age '+fmtNum(retire.age)],['Age Pension net worth',fmtMoney(pension.netWorth),'At age '+fmtNum(pension.age)]]; const horizon=horizonYears(); const horizonRows=[['Metric',...horizon.map(x=>x.label)],['Target FY',...horizon.map(x=>x.a.fy)],['Year-end date',...horizon.map(x=>esc(x.a.juneDate))],['Age at year-end',...horizon.map(x=>fmtNum(latest.monthly.find(m=>m.date===x.a.juneDate)?.age||''))],['Total taxable income',...horizon.map(x=>fmtMoney((latest.taxMap[x.a.fy]||{}).taxable))],['Total tax liability',...horizon.map(x=>fmtMoney((latest.taxMap[x.a.fy]||{}).totalTax))],['Core outgoings',...horizon.map(x=>fmtMoney(n(x.a.living)+n(x.a.travel)+n(x.a.oneOffs)+n(x.a.phiCash)+n(x.a.novatedPostTax)))],['Cash closing',...horizon.map(x=>fmtMoney(x.a.cashJune))],['Super closing',...horizon.map(x=>fmtMoney(x.a.superJune))],['Property equity',...horizon.map(x=>fmtMoney(x.a.propertyEquityJune))],['Net worth',...horizon.map(x=>fmtMoney(x.a.netWorthJune))]]; const focusRows=[['Focus area','Status','Comment'],['Cash buffer',current.cashClosing>=n(state.minimumCashBuffer)?'OK':'Pressure',current.cashClosing>=n(state.minimumCashBuffer)?'Current cash is above the nominated buffer.':'Current cash is below the nominated buffer.'],['Overdraft',latest.monthly.some(m=>n(m.odClosing)>0.01)?'Watch':'OK',latest.monthly.some(m=>n(m.odClosing)>0.01)?'At least one month uses overdraft or balancing debt.':'The current horizon stays out of overdraft.'],['Checks',failed?'Review':'OK',failed?failed+' validation check(s) failed.':'No failed checks are flagged.'],['Lifestyle assumptions','Review','Living costs, travel, one-offs and PHI are now exposed in their own input block.'],['Tax timing','Review','Tax settlement and ATO instalments are modelled as cash-timing items, separate from annual tax liability.']]; const coverageRows=[['Workbook area','HTML coverage'],['Actuals_Pack','Inputs are arranged into expandable blocks, including Living costs and lifestyle.'],['Plan_Summary','This tab shows plan KPIs, milestones, horizon view and immediate focus.'],['Dashboard','Dashboard tab reproduces the selected-horizon roll-forward structure.'],['Annual_Summary','Annual summary tab shows the full financial-year roll-forward.'],['Monthly_Engine','Monthly engine tab shows the monthly cash, tax, property, offset and balance-sheet bridge.'],['Tax Engine_FY','Tax bridge tab shows annual taxable income, tax, offsets, PAYG, instalments and Division 293.'],['Checks','Checks tab shows validation pass/fail diagnostics.']]; document.getElementById('view').innerHTML='<div class="summarySection"><div class="summaryGrid">'+cards.map(c=>'<div class="summaryCard"><div class="label">'+esc(c[0])+'</div><div class="value">'+esc(c[1])+'</div><div class="note">'+esc(c[2])+'</div></div>').join('')+'</div></div><div class="summarySection"><h3>Milestone balance sheet</h3>'+table(milestoneRows()[0],milestoneRows().slice(1))+'</div><div class="summarySection"><h3>Selected horizon view</h3>'+table(horizonRows[0],horizonRows.slice(1))+'</div><div class="summarySection"><h3>Immediate focus</h3>'+table(focusRows[0],focusRows.slice(1))+'</div><div class="summarySection"><h3>Workbook coverage</h3><div class="coverageNote">The HTML tool is not a spreadsheet renderer. It ports the workbook planning workflow into explicit browser calculations and user-facing tables.</div>'+table(coverageRows[0],coverageRows.slice(1))+'</div>';}
+function renderWorkbookDashboard(){const horizon=horizonYears(); const rows=[['Target FY',...horizon.map(x=>x.a.fy)],['Year-end date',...horizon.map(x=>esc(x.a.juneDate))],['Age at year-end',...horizon.map(x=>fmtNum(latest.monthly.find(m=>m.date===x.a.juneDate)?.age||''))],['Income and tax','','','','','',''],['Salary income',...horizon.map(x=>fmtMoney(x.a.salaryBase))],['Passive + bonus',...horizon.map(x=>fmtMoney(x.a.taxablePassivePlusBonus))],['Total taxable income',...horizon.map(x=>fmtMoney((latest.taxMap[x.a.fy]||{}).taxable))],['Total tax liability',...horizon.map(x=>fmtMoney((latest.taxMap[x.a.fy]||{}).totalTax))],['ATO settlement',...horizon.map(x=>fmtMoney((latest.taxMap[x.a.fy]||{}).settlementExDiv293))],['Concessional contributions',...horizon.map(x=>fmtMoney(x.a.totalConcessional))],['Age Pension cash',...horizon.map(x=>fmtMoney(x.a.pensionCash))],['Costs and lifestyle','','','','','',''],['Living costs',...horizon.map(x=>fmtMoney(x.a.living))],['Travel',...horizon.map(x=>fmtMoney(x.a.travel))],['One-offs',...horizon.map(x=>fmtMoney(x.a.oneOffs))],['PHI premium cash',...horizon.map(x=>fmtMoney(x.a.phiCash))],['Novated lease post-tax cash',...horizon.map(x=>fmtMoney(x.a.novatedPostTax))],['Core outgoings',...horizon.map(x=>fmtMoney(n(x.a.living)+n(x.a.travel)+n(x.a.oneOffs)+n(x.a.phiCash)+n(x.a.novatedPostTax)))],['Balances and net worth','','','','','',''],['Cash closing',...horizon.map(x=>fmtMoney(x.a.cashJune))],['Savings cash ex offset',...horizon.map(x=>fmtMoney(x.a.savingsCashJune))],['Offset balance',...horizon.map(x=>fmtMoney(x.a.offsetJune))],['Gross debt',...horizon.map(x=>fmtMoney(x.a.grossDebtJune))],['Net cash / debt',...horizon.map(x=>fmtMoney(x.a.netCashDebtJune))],['Investments closing',...horizon.map(x=>fmtMoney(x.a.invJune))],['Super closing',...horizon.map(x=>fmtMoney(x.a.superJune))],['Property equity',...horizon.map(x=>fmtMoney(x.a.propertyEquityJune))],['Net worth',...horizon.map(x=>fmtMoney(x.a.netWorthJune))]]; document.getElementById('view').innerHTML='<div class="small">Selected horizon view aligned to the workbook Dashboard: Year 1, Year 2, Year 3, Year 5, Year 10 and Year 15 where available.</div>'+table(['Metric',...horizon.map(x=>x.label)],rows);}
+function renderAnnual(){const rows=Object.values(latest.annual).map(a=>[a.fy,fmtMoney(a.salaryBase),fmtMoney(a.bonus),fmtMoney(a.taxablePassivePlusBonus),fmtMoney(a.living),fmtMoney(a.travel),fmtMoney(a.oneOffs),fmtMoney(a.phiCash),fmtMoney(a.pensionCash),fmtMoney(a.cashJune),fmtMoney(a.savingsCashJune),fmtMoney(a.offsetJune),fmtMoney(a.odJune),fmtMoney(a.grossDebtJune),fmtMoney(a.netCashDebtJune),fmtMoney(a.invJune),fmtMoney(a.superJune),fmtMoney(a.propertyEquityJune),fmtMoney(a.netWorthJune),fmtMoney(a.atoQuarterlyInstalmentsCash),fmtMoney((latest.taxMap[a.fy]||{}).settlementExDiv293)]); document.getElementById('view').innerHTML=table(['FY','Salary','Bonus','Taxable passive + bonus','Living costs','Travel','One-offs','PHI cash','Age Pension cash','Cash June','Savings ex offset June','Offset June','Overdraft June','Gross debt June','Net cash / debt June','Investments June','Super June','Property equity June','Net worth June','ATO instalments paid','Tax settlement ex Div293'],rows);}
+function renderTax(){const rows=Object.values(latest.taxMap).map(t=>[t.fy,fmtMoney(t.taxable),fmtMoney(t.baseTax),fmtMoney(t.lito),fmtMoney(t.medicare),fmtMoney(t.mls),fmtMoney(t.phiOffset),fmtMoney(t.totalTax),fmtMoney(t.paygWithholding),fmtMoney(t.instalmentsPaid),fmtMoney(t.paygPaid),fmtMoney(t.settlementExDiv293),fmtMoney(t.quarterlyInstalmentsAssessed),fmtMoney(t.div293),fmtMoney(t.adjustedIncome)]); document.getElementById('view').innerHTML=table(['FY','Taxable income','Base income tax','LITO','Medicare levy','MLS','PHI rebate tax offset','Total tax ex Div293','PAYG withholding','ATO instalments paid','PAYG + instalments paid','Settlement ex Div293','Next-year instalments assessed','Div 293','Adjusted income'],rows);}
+function renderLifestyle(){const rows=annualYears().map(a=>[a.fy,fmtMoney(a.living),fmtMoney(a.travel),fmtMoney(a.oneOffs),fmtMoney(a.phiCash),fmtMoney(a.novatedPostTax),fmtMoney(n(a.living)+n(a.travel)+n(a.oneOffs)+n(a.phiCash)+n(a.novatedPostTax)),fmtMoney(a.p1Costs+a.p2Costs),fmtMoney(a.p1Interest+a.p2Interest),fmtMoney(a.cashJune)]); const monthlyRows=latest.monthly.slice(0,120).map(m=>[m.date,m.fy,fmtMoney(m.living),fmtMoney(m.travel),fmtMoney(m.oneOffs),fmtMoney(m.phiCash),fmtMoney(m.novatedPostTax),fmtMoney(m.p1Costs+m.p2Costs),fmtMoney(m.p1Interest+m.p2Interest),fmtMoney(m.cashClosing)]); document.getElementById('view').innerHTML='<div class="small">This tab surfaces the workbook Actuals_Pack Living costs and lifestyle block and its cash-flow impact.</div><div class="summarySection"><h3>Annual lifestyle and recurring cash outflows</h3>'+table(['FY','Living costs','Travel','One-offs','PHI cash','Novated post-tax','Core lifestyle outgoings','Property costs','Loan interest','Cash June'],rows)+'</div><div class="summarySection"><h3>Monthly lifestyle bridge, first 120 months</h3>'+table(['Month','FY','Living costs','Travel','One-offs','PHI cash','Novated post-tax','Property costs','Loan interest','Cash closing'],monthlyRows)+'</div>';}
+function renderMonthly(){
+  const months=latest.monthly.slice(0,120);
+  const intro='<div class="small">Showing first 120 months. The workbook-style Monthly_Engine is split into practical sections so wide tables stay contained and readable. Export monthly CSV for the full horizon.</div>';
+  const cashRows=months.map(m=>[m.date,m.fy,fmtNum(m.age),m.work?'Y':'',fmtMoney(m.salaryBase),fmtMoney(m.bonus),fmtMoney(m.payg),fmtMoney(m.bonusPayg),fmtMoney(m.taxSettlementCash),fmtMoney(m.atoQuarterlyInstalmentsCash),fmtMoney(m.div293Cash),fmtMoney(m.living),fmtMoney(m.travel),fmtMoney(m.oneOffs),fmtMoney(m.phiCash),fmtMoney(m.novatedPostTax),fmtMoney(m.p1Costs+m.p2Costs),fmtMoney(m.p1Interest+m.p2Interest),fmtMoney(m.p2AcqOutflow),fmtMoney(m.loanProceeds),fmtMoney(m.cashPreBridge),fmtMoney(m.investmentLiquidation),fmtMoney(m.superDrawdown),fmtMoney(m.newOD),fmtMoney(m.odRepay),fmtMoney(m.cashClosing)]);
+  const taxRows=months.map(m=>[m.date,m.fy,fmtMoney(m.taxableSalary),fmtMoney(m.taxablePassivePlusBonus),fmtMoney(m.capitalGain),fmtMoney(m.savingsInterest),fmtMoney(m.divCash),fmtMoney(m.divReinvest),fmtMoney(m.p1Rent),fmtMoney(m.p2Rent),fmtMoney(m.taxableP1Rent),fmtMoney(m.deductP1Costs),fmtMoney(m.deductP1Interest),fmtMoney(m.taxableP2Rent),fmtMoney(m.deductP2Costs),fmtMoney(m.deductP2Interest),m.p1MR?'Y':'',m.p2MR?'Y':'',m.p1Avail?'Y':'']);
+  const balanceRows=months.map(m=>[m.date,m.fy,fmtMoney(m.cashClosing),fmtMoney(m.savingsClosingExOffset),fmtMoney(m.openingOffset),fmtMoney(m.closingOffset),fmtMoney(m.cashSplitCheck),fmtMoney(m.invClosing),fmtMoney(m.supClosing),fmtMoney(m.p1Value),fmtMoney(m.p1LoanClosing),fmtMoney(m.p2Value),fmtMoney(m.p2LoanClosing),fmtMoney(m.propertyEquity),fmtMoney(m.odClosing),fmtMoney(m.grossDebtClosing),fmtMoney(m.netCashDebtClosing),fmtMoney(m.assessableAssets),fmtMoney(m.deemedIncome),fmtMoney(m.pensionAnnual),fmtMoney(m.netWorth)]);
+  document.getElementById('view').innerHTML=intro+
+    '<div class="tableGroup"><h3>Monthly cash-flow bridge</h3><p class="tableIntro">Employment cash, tax timing, lifestyle outgoings, property cash costs and liquidity bridges.</p>'+table(['Month','FY','Age','Work','Base salary gross','Bonus gross','Salary PAYG','Bonus PAYG','Tax settlement cash','ATO instalments cash','Div293 cash','Living costs','Travel','One-offs','PHI premium cash','Novated post-tax cash','Property costs','Loan interest','P2 acquisition cash','Loan proceeds','Cash pre-bridge','Investment liquidation','Super drawdown','New OD draw','OD repayment','Cash closing incl offset'],cashRows)+'</div>'+ 
+    '<div class="tableGroup"><h3>Monthly taxable-income bridge</h3><p class="tableIntro">Taxable salary, passive income, property tax gates and deductible-property components.</p>'+table(['Month','FY','Taxable salary','Taxable passive + bonus','Taxable capital gain','Savings interest','Dividends cash','Dividends reinvested','Rent P1 cash','Rent P2 cash','Taxable P1 rent','Deductible P1 costs','Deductible P1 interest','Taxable P2 rent','Deductible P2 costs','Deductible P2 interest','P1 MR','P2 MR','P1 available'],taxRows)+'</div>'+ 
+    '<div class="tableGroup"><h3>Monthly balance sheet, offset and retirement bridge</h3><p class="tableIntro">Cash split, offset movement, investments, super, property equity, pension tests and net worth.</p>'+table(['Month','FY','Cash closing incl offset','Savings cash ex offset','Opening offset','Closing offset','Cash split check','Investments closing','Super closing','P1 value','P1 loan closing','P2 value','P2 loan closing','Property equity','OD closing','Gross debt closing','Net cash / debt','Pension assessable assets','Pension assessable income','Age Pension annual','Net worth'],balanceRows)+'</div>';
+}
+function renderChecks(){const rows=latest.checks.map(c=>['<span class="badge '+(c.ok?'good':'bad')+'">'+(c.ok?'PASS':'FAIL')+'</span>',esc(c.name),esc(c.detail)]); document.getElementById('view').innerHTML=table(['Status','Check','Detail'],rows);}
+function esc(x){return String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function toCSV(rows){return rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');}
+function download(name,text,type='text/plain'){const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+function exportAnnual(){const rows=[['FY','salary','bonus','taxablePassivePlusBonus','cashJune','offsetJune','savingsCashJune','overdraftJune','grossDebtJune','netCashDebtJune','investmentsJune','superJune','propertyEquityJune','netWorthJune','taxSettlementExDiv293','quarterlyInstalmentsAssessed','div293']]; for(const a of Object.values(latest.annual)){const t=latest.taxMap[a.fy]||{}; rows.push([a.fy,a.salaryBase,a.bonus,a.taxablePassivePlusBonus,a.cashJune,a.offsetJune,a.savingsCashJune,a.odJune,a.grossDebtJune,a.netCashDebtJune,a.invJune,a.superJune,a.propertyEquityJune,a.netWorthJune,t.settlementExDiv293,t.quarterlyInstalmentsAssessed,t.div293]);} download('annual_summary.csv',toCSV(rows),'text/csv');}
+function exportMonthly(){const keys=['date','fy','age','work','superAccess','pensionAccess','idx','salaryBase','bonus','preTaxPackage','salarySacrifice','personalDeductible','taxableSalary','payg','bonusPayg','atoQuarterlyInstalmentsCash','savingsInterest','divCash','divReinvest','capGrowth','p1Rent','p2Rent','pensionCash','p1Costs','p2Costs','p1Interest','p1Principal','p2Interest','p2Principal','phiCash','living','travel','oneOffs','novatedPostTax','taxSettlementCash','div293Cash','loanProceeds','p2AcqOutflow','cashPreBridge','investmentLiquidation','superDrawdown','newOD','odRepay','cashClosing','savingsClosingExOffset','closingOffset','invClosing','supClosing','p1Value','p2Value','p1LoanClosing','p2LoanClosing','odClosing','grossDebtClosing','netCashDebtClosing','taxablePassivePlusBonus','capitalGain','assessableAssets','deemedIncome','pensionAnnual','netWorth','p1MR','p2MR','p1Avail']; const rows=[keys]; for(const m of latest.monthly)rows.push(keys.map(k=>m[k])); download('monthly_engine.csv',toCSV(rows),'text/csv');}
+function exportScenario(){download((state.caseName||'scenario')+'_scenario.json',JSON.stringify(state,null,2),'application/json');}
+function importScenario(file){const r=new FileReader(); r.onload=()=>{try{state=JSON.parse(r.result); setupFontControls(); renderInputs(); recalc();}catch(e){alert('Invalid JSON scenario file.');}}; r.readAsText(file);}
+document.getElementById('caseSelect').addEventListener('change',e=>{state=clone(PRESETS[e.target.value]); setupFontControls(); renderInputs(); recalc();});
+document.getElementById('resetBtn').addEventListener('click',()=>{state=clone(PRESETS[document.getElementById('caseSelect').value]); setupFontControls(); renderInputs(); recalc();});
+document.getElementById('exportAnnualBtn').addEventListener('click',exportAnnual); document.getElementById('exportMonthlyBtn').addEventListener('click',exportMonthly); document.getElementById('exportScenarioBtn').addEventListener('click',exportScenario); document.getElementById('importScenario').addEventListener('change',e=>{if(e.target.files[0])importScenario(e.target.files[0]);}); document.getElementById('expandInputsBtn').addEventListener('click',()=>document.querySelectorAll('.inputGroup').forEach(d=>d.open=true)); document.getElementById('collapseInputsBtn').addEventListener('click',()=>document.querySelectorAll('.inputGroup').forEach(d=>d.open=false));
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>renderView(b.dataset.view)));
+setupFontControls(); renderInputs(); recalc();
+</script>
+
+<script>
+(function(){
+  const statusEl = document.getElementById('pwaStatus');
+  const installBtn = document.getElementById('installPwaBtn');
+  let deferredPrompt = null;
+  function setStatus(message){ if(statusEl) statusEl.textContent = message || ''; }
+  function updateOnlineStatus(){
+    if(!navigator.onLine) setStatus('Offline mode: using the cached financial planning tool. Export scenario JSON before clearing browser data.');
+    else if(statusEl && statusEl.textContent.startsWith('Offline mode')) setStatus('');
+  }
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    if(installBtn) installBtn.hidden = false;
+  });
+  if(installBtn){
+    installBtn.addEventListener('click', async () => {
+      if(!deferredPrompt){
+        setStatus('Install prompt is not available in this browser. Use the browser menu to add this app to the home screen.');
+        return;
+      }
+      deferredPrompt.prompt();
+      try { await deferredPrompt.userChoice; } catch(e) {}
+      deferredPrompt = null;
+      installBtn.hidden = true;
+    });
+  }
+  window.addEventListener('appinstalled', () => {
+    setStatus('App installed. It can now be opened from your device home screen or app launcher.');
+    if(installBtn) installBtn.hidden = true;
+  });
+  if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then((registration) => {
+          if(registration.waiting) registration.waiting.postMessage({type:'SKIP_WAITING'});
+          registration.addEventListener('updatefound', () => {
+            const worker = registration.installing;
+            if(!worker) return;
+            worker.addEventListener('statechange', () => {
+              if(worker.state === 'installed' && navigator.serviceWorker.controller){
+                setStatus('A new version is available. Refresh the page to update.');
+              }
+            });
+          });
+        })
+        .catch(() => setStatus('Offline install support could not be registered in this browser.'));
+    });
+  } else if(location.protocol === 'file:'){
+    setStatus('PWA install/offline cache requires hosting over HTTPS or localhost. The calculator still works as a local HTML file.');
+  }
+})();
+</script>
+
+</body>
+</html>
