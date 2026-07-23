@@ -1097,7 +1097,7 @@ function createWizardMeta(assumptions=DEFAULTS,source='advanced-planner'){
   return {version:INTERVIEW_SCHEMA_VERSION,started:false,completed:false,currentQuestionId:'about-you',currentStep:0,context,fields,questionState,questionPath:[],skippedQuestions:{},inactiveFields:[],clarificationHistory:[],confirmedWarnings:{},pendingWarningIds:[],dismissedRefinements:[],conversationSummaries:{},generatedAt:null,informationQuality:null,scenarioHash:null,narrativeVersion:NARRATIVE_VERSION};
 }
 function createNewGuidedPlan(){
-  const assumptions={...deepClone(DEFAULTS),scenarioName:'Guided first-cut plan',startDate:GUIDED_DEFAULTS.startDate.value,baseSalary:0,bonusAnnual:0,livingAnnual:0,travelAnnual:0,discretionaryAnnual:0,retirementSpendingAnnual:0,openingCash:0,openingInvestments:0,openingInvestmentCostBase:0,openingSuperAccum:0,openingSuperPension:0,p1Enabled:false,p2Enabled:false,includeAgePension:true,facilityEnabled:false,majorFutureCostEnabled:false,salarySacrificeAnnual:0,personalDeductibleAnnual:0,afterTaxSuperAnnual:0};
+  const assumptions={...deepClone(DEFAULTS),scenarioName:'Guided first-cut plan',startDate:GUIDED_DEFAULTS.startDate.value,baseSalary:0,bonusAnnual:0,hospitalCover:false,phiGrossAnnual:0,livingAnnual:0,travelAnnual:0,discretionaryAnnual:0,retirementSpendingAnnual:0,openingCash:0,openingInvestments:0,openingInvestmentCostBase:0,openingSuperAccum:0,openingSuperPension:0,p1Enabled:false,p2Enabled:false,includeAgePension:true,facilityEnabled:false,majorFutureCostEnabled:false,salarySacrificeAnnual:0,personalDeductibleAnnual:0,afterTaxSuperAnnual:0};
   const meta=createWizardMeta(assumptions,'user');meta.started=true;
   for(const key of Object.keys(meta.fields))meta.fields[key]=makeFieldMeta(key,'not-applicable','user',assumptions[key]);
   for(const [key,d] of Object.entries(GUIDED_DEFAULTS)){assumptions[key]=d.value;meta.fields[key]=makeFieldMeta(key,'approximate','model-default',d.value);}
@@ -1117,7 +1117,19 @@ function syncWizardMetaFromAdvanced(key){
   if(!wizardMeta?.fields)return;const f=wizardMeta.fields[key]||makeFieldMeta(key);Object.assign(f,{central:deepClone(state[key]),lower:null,upper:null,entryBasis:defaultWizardEntryBasis(key),quality:'exact',source:'advanced-planner',lastUpdated:new Date().toISOString(),reviewed:true,active:true});wizardMeta.fields[key]=f;
   for(const q of questionsForField(key))wizardMeta.questionState[q.id].answered=true;wizardMeta.completed=wizardMeta.completed||!!firstCutResult;wizardMeta.narrativeVersion=NARRATIVE_VERSION;firstCutDirty=true;invalidateInterpretationCaches();
 }
-function wizardContextFrom(meta,key){return meta?.context?.[key]??WIZARD_CONTEXT_DEFAULTS_V35[key];}
+function parseInterviewBoolean(value,fallback=false){
+  if(value===true||value==='true'||value===1||value==='1')return true;
+  if(value===false||value==='false'||value===0||value==='0'||value===null||value===undefined||value==='')return false;
+  return !!fallback;
+}
+function normaliseInterviewContext(meta=wizardMeta){
+  if(!meta?.context)return;
+  for(const [key,cfg] of Object.entries(INTERVIEW_CONTEXT_FIELDS))if(cfg.boolean)meta.context[key]=parseInterviewBoolean(meta.context[key],WIZARD_CONTEXT_DEFAULTS_V35[key]);
+}
+function wizardContextFrom(meta,key){
+  const raw=meta?.context?.[key]??WIZARD_CONTEXT_DEFAULTS_V35[key];
+  return INTERVIEW_CONTEXT_FIELDS[key]?.boolean?parseInterviewBoolean(raw,WIZARD_CONTEXT_DEFAULTS_V35[key]):raw;
+}
 function wizardContext(key){return wizardContextFrom(wizardMeta,key);}
 function wizardConfig(key){
   const configured=WIZARD_FIELD_CONFIG[key]||{},f=F[key];
@@ -1221,6 +1233,7 @@ function wizardDisplayValue(key,value=state[key],meta=null){const f=F[key];if(!f
 function wizardParseValue(key,value,meta=null){const f=F[key];if(!f)return value;if(f.type==='percent')return value===''?NaN:Number(value)/100;if(['money','signedMoney'].includes(f.type))return value===''?NaN:Number(value)*entryBasisAnnualFactor(meta?.entryBasis||defaultWizardEntryBasis(key));if(['number','month'].includes(f.type))return value===''?NaN:Number(value);if(f.type==='boolean')return value==='true';return value;}
 function currentSpendingTotal(s=state){return n(s.livingAnnual)+n(s.travelAnnual)+n(s.discretionaryAnnual);}
 function applyContextMapping(){
+  normaliseInterviewContext(wizardMeta);
   const c=wizardMeta.context;
   if(c.employmentStatus==='working'||c.employmentStatus==='retired')c.futureWorkExpected=false;
   if(c.employmentStatus!=='working'&&!c.futureWorkExpected){state.baseSalary=0;state.bonusAnnual=0;state.careerChangeEnabled=false;state.salarySacrificeAnnual=0;state.personalDeductibleAnnual=0;state.afterTaxSuperAnnual=0;if(c.employmentStatus==='retired')state.retirementAge=Math.min(n(state.currentAge)||67,n(state.endAge)-1);}else{const retirementMeta=wizardMeta.fields.retirementAge;if(retirementMeta?.central!==null&&retirementMeta?.central!==undefined&&!['unknown','not-applicable'].includes(retirementMeta.quality))state.retirementAge=deepClone(retirementMeta.central);}
@@ -1289,8 +1302,13 @@ function questionEntryGuide(q,fields){
   if(hasPct)parts.push('For percentages, enter 4 for 4%, not 0.04.');
   return parts.join(' ');
 }
+function setSelectValueSafely(select,value,placeholder='Choose an answer'){
+  const desired=value===null||value===undefined?'':String(value),values=[...select.options].map(o=>o.value);
+  if(values.includes(desired)){select.value=desired;return true;}
+  const option=document.createElement('option');option.value='';option.textContent=placeholder;option.disabled=true;option.selected=true;select.insertBefore(option,select.firstChild);return false;
+}
 function renderInterviewContextControl(key){
-  const cfg=INTERVIEW_CONTEXT_FIELDS[key],copy=interviewContextCopy(key,cfg),box=document.createElement('div');box.className='wizard-question context-question';const label=document.createElement('label');label.htmlFor='wizctx_'+key;label.textContent=copy.label;const help=document.createElement('div');help.className='question-help';help.textContent=copy.help;const select=document.createElement('select');select.id='wizctx_'+key;select.className='wizard-context-control';for(const [v,l] of cfg.options){const o=document.createElement('option');o.value=v;o.textContent=l;select.appendChild(o);}const value=wizardContext(key);select.value=cfg.boolean?String(!!value):String(value);select.addEventListener('change',()=>{wizardMeta.context[key]=cfg.boolean?select.value==='true':select.value;wizardMeta.completed=false;wizardMeta.pendingWarningIds=[];firstCutDirty=true;applyContextMapping();invalidateInterpretationCaches();persistIfEnabled();renderWizardStep();});box.append(label,help,select);return box;
+  const cfg=INTERVIEW_CONTEXT_FIELDS[key],copy=interviewContextCopy(key,cfg),box=document.createElement('div');box.className='wizard-question context-question';const label=document.createElement('label');label.htmlFor='wizctx_'+key;label.textContent=copy.label;const help=document.createElement('div');help.className='question-help';help.textContent=copy.help;const select=document.createElement('select');select.id='wizctx_'+key;select.className='wizard-context-control';for(const [v,l] of cfg.options){const o=document.createElement('option');o.value=v;o.textContent=l;select.appendChild(o);}const value=wizardContext(key);setSelectValueSafely(select,cfg.boolean?String(parseInterviewBoolean(value)):String(value));select.addEventListener('change',()=>{wizardMeta.context[key]=cfg.boolean?parseInterviewBoolean(select.value):select.value;wizardMeta.completed=false;wizardMeta.pendingWarningIds=[];firstCutDirty=true;applyContextMapping();invalidateInterpretationCaches();persistIfEnabled();renderWizardStep();});box.append(label,help,select);return box;
 }
 function renderWizardFieldQuestion(key){
   const f=F[key],cfg=wizardConfig(key),meta=wizardMeta.fields[key]||makeFieldMeta(key),box=document.createElement('div');box.className='wizard-question field-question';box.dataset.key=key;
@@ -1388,8 +1406,8 @@ function plainQuestionHelp(key,fallback){return INTERVIEW_FIELD_COPY[key]?.help|
 function plainReviewLabel(key){return INTERVIEW_FIELD_COPY[key]?.review||F[key]?.label||key;}
 function createInterviewValueControl(key,kind,meta){
   const f=F[key],wrap=document.createElement('div');wrap.className='wizard-subfield wizard-value-control';const label=document.createElement('label');label.htmlFor='wiz_'+key+'_'+kind;label.textContent=wizardInputLabel(key,kind,meta);let control;
-  if(f.type==='boolean'){control=document.createElement('select');for(const [v,l] of [['true','Yes'],['false','No']]){const o=document.createElement('option');o.value=v;o.textContent=l;control.appendChild(o);}control.value=String(kind==='central'?(meta.central??state[key]):meta[kind]);}
-  else if(f.type==='enum'){control=document.createElement('select');for(const [v,l] of f.options){const o=document.createElement('option');o.value=v;o.textContent=l;control.appendChild(o);}control.value=String(kind==='central'?(meta.central??state[key]):meta[kind]??'');}
+  if(f.type==='boolean'){control=document.createElement('select');for(const [v,l] of [['true','Yes'],['false','No']]){const o=document.createElement('option');o.value=v;o.textContent=l;control.appendChild(o);}setSelectValueSafely(control,String(parseInterviewBoolean(kind==='central'?(meta.central??state[key]):meta[kind])));}
+  else if(f.type==='enum'){control=document.createElement('select');for(const [v,l] of f.options){const o=document.createElement('option');o.value=v;o.textContent=l;control.appendChild(o);}setSelectValueSafely(control,kind==='central'?(meta.central??state[key]):meta[kind]??'');}
   else{control=document.createElement('input');control.type=f.type==='date'?'date':f.type==='month'?'number':'text';if(f.type==='month'){control.min='1';control.max='12';}control.inputMode=['money','signedMoney','percent','number','month'].includes(f.type)?'decimal':undefined;control.value=wizardDisplayValue(key,kind==='central'?(meta.central??state[key]):meta[kind],meta);}
   control.id='wiz_'+key+'_'+kind;control.className='wizard-context-control';control.addEventListener('change',()=>{const q=questionsForField(key).find(x=>x.id===wizardMeta.currentQuestionId),before=q?questionSurfaceSignature(q):'';updateWizardFieldValue(key,kind,control.value);if(q&&kind==='central')wizardMeta.questionState[q.id].source='user';if(q&&before!==questionSurfaceSignature(q)){renderWizardStep();return;}const interp=control.parentElement.querySelector('.wizard-interpretation');if(interp)interp.textContent=valueInterpretation(key,wizardParseValue(key,control.value,meta),meta);});wrap.append(label,control);const interp=document.createElement('div');interp.className='wizard-interpretation';interp.textContent=valueInterpretation(key,kind==='central'?(meta.central??state[key]):meta[kind],meta);wrap.appendChild(interp);return wrap;
 }
@@ -1411,8 +1429,37 @@ function setWizardQuality(key,quality){
 function updateWizardFieldValue(key,kind,raw){
   const m=wizardMeta.fields[key]||makeFieldMeta(key),value=wizardParseValue(key,raw,m);if(kind==='lower')m.lower=value;if(kind==='upper')m.upper=value;if(kind==='central'){m.central=value;state[key]=value;}m.source='user';m.lastUpdated=new Date().toISOString();m.reviewed=true;m.active=true;wizardMeta.fields[key]=m;wizardMeta.completed=false;wizardMeta.pendingWarningIds=[];firstCutDirty=true;invalidateInterpretationCaches();applyContextMapping();
 }
+function sameInterviewValue(a,b){
+  if(typeof a==='number'||typeof b==='number')return Number.isFinite(Number(a))&&Number.isFinite(Number(b))&&Number(a)===Number(b);
+  return a===b;
+}
+function synchroniseRenderedQuestionControls(q,root=document.getElementById('wizardContent')||document){
+  if(!q)return {needsRerender:false,changed:false};
+  const find=id=>root.querySelector?root.querySelector('#'+CSS.escape(id)):document.getElementById(id);
+  let changed=false,needsRerender=false;normaliseInterviewContext(wizardMeta);
+  for(const key of questionActiveContextFields(q)){
+    const cfg=INTERVIEW_CONTEXT_FIELDS[key],control=find('wizctx_'+key);if(!cfg||!control)continue;
+    const allowed=cfg.options.map(x=>x[0]);if(!allowed.includes(control.value))continue;
+    const value=cfg.boolean?parseInterviewBoolean(control.value):control.value;if(!sameInterviewValue(wizardMeta.context[key],value)){wizardMeta.context[key]=value;changed=true;}
+  }
+  applyContextMapping();
+  for(const key of questionActiveFields(q)){
+    const meta=wizardMeta.fields[key]||makeFieldMeta(key),basis=find('wiz_'+key+'_basis'),quality=find('wiz_'+key+'_quality');
+    if(basis&&wizardEntryBasisOptions(key).includes(basis.value)&&meta.entryBasis!==basis.value){meta.entryBasis=basis.value;changed=true;}
+    if(quality){const qualities=(wizardConfig(key).qualities||['exact','approximate','range','unknown']).filter(x=>x!=='not-applicable'||!wizardConfig(key).required);if(qualities.includes(quality.value)&&meta.quality!==quality.value){setWizardQuality(key,quality.value);changed=true;needsRerender=true;}}
+    const activeMeta=wizardMeta.fields[key]||meta,kinds=activeMeta.quality==='range'?['lower','central','upper']:['central'];
+    if(['unknown','not-applicable'].includes(activeMeta.quality))continue;
+    for(const kind of kinds){const control=find('wiz_'+key+'_'+kind);if(!control){needsRerender=true;continue;}const value=wizardParseValue(key,control.value,activeMeta),previous=kind==='central'?activeMeta.central:activeMeta[kind],metaChanged=!sameInterviewValue(previous,value),stateChanged=kind==='central'&&!sameInterviewValue(state[key],value);if(metaChanged||stateChanged){activeMeta[kind]=value;if(kind==='central')state[key]=value;if(metaChanged)activeMeta.source='user';activeMeta.lastUpdated=new Date().toISOString();changed=true;}}
+    activeMeta.active=true;wizardMeta.fields[key]=activeMeta;
+  }
+  if(q.id==='review'){const acknowledgement=find('wizardAcknowledgement');if(acknowledgement&&wizardMeta.context.acknowledged!==acknowledgement.checked){wizardMeta.context.acknowledged=acknowledgement.checked;changed=true;}}
+  applyContextMapping();
+  if(changed){wizardMeta.completed=false;wizardMeta.pendingWarningIds=[];firstCutDirty=true;invalidateInterpretationCaches();persistIfEnabled();}
+  return {needsRerender,changed};
+}
 function validateQuestion(q){
   applyContextMapping();const errors=[],fields=questionActiveFields(q);
+  for(const key of questionActiveContextFields(q)){const cfg=INTERVIEW_CONTEXT_FIELDS[key],value=wizardContext(key);if(!cfg?.options?.some(([raw])=>cfg.boolean?parseInterviewBoolean(raw)===value:raw===value))errors.push((interviewContextCopy(key,cfg).label||key)+' needs an answer.');}
   for(const id of fields){const cfg=wizardConfig(id),meta=wizardMeta.fields[id]||makeFieldMeta(id),required=!!cfg.required||!!(cfg.requiredWhen&&cfg.requiredWhen({assumptions:state,context:wizardMeta.context}))||['currentAge','startDate','retirementAge','endAge','retirementSpendingAnnual'].includes(id);if(required&&['unknown','not-applicable'].includes(meta.quality))errors.push(plainReviewLabel(id)+' needs an answer.');if(meta.quality==='range'){if(F[id]?.type==='date'){if(!isDate(meta.lower)||!isDate(meta.central)||!isDate(meta.upper)||meta.lower>meta.central||meta.central>meta.upper)errors.push(plainReviewLabel(id)+' range must run from the earliest date to the best estimate and then the latest date.');}else if(![meta.lower,meta.central,meta.upper].every(x=>Number.isFinite(Number(x)))||n(meta.lower)>n(meta.central)||n(meta.central)>n(meta.upper))errors.push(plainReviewLabel(id)+' range must run from the lower estimate to the best estimate and then the upper estimate.');}}
   const v=validateState(state);for(const [key,msgs] of Object.entries(v.errors)){if(fields.includes(key))errors.push(plainReviewLabel(key)+': '+msgs.join(' '));}
   if(q.id==='about-you'&&!/^\d{4}-07-01$/.test(String(state.startDate)))errors.push('The guided first cut must start on 1 July. Choose 1 July, or use the Advanced planner for a start in another month.');
@@ -1428,7 +1475,7 @@ function renderPlausibilityConfirmation(warnings){const box=document.createEleme
 function commitPendingWarnings(){for(const id of wizardMeta.pendingWarningIds||[]){const cb=document.querySelector('[data-confirm-warning="'+CSS.escape(id)+'"]');if(!cb?.checked)return false;const rule=PLAUSIBILITY_BY_ID[id];wizardMeta.confirmedWarnings[id]={signature:warningSignature(rule),confirmedAt:new Date().toISOString(),questionId:wizardMeta.currentQuestionId};wizardMeta.clarificationHistory.push({type:'plausibility-confirmation',ruleId:id,questionId:wizardMeta.currentQuestionId,at:new Date().toISOString()});}wizardMeta.pendingWarningIds=[];return true;}
 function commitCurrentQuestion(q){const qs=wizardMeta.questionState[q.id]||(wizardMeta.questionState[q.id]=makeQuestionState(q.id));qs.answered=true;qs.active=true;qs.restored=false;qs.lastCommitted=new Date().toISOString();for(const key of questionActiveFields(q)){const m=wizardMeta.fields[key]||makeFieldMeta(key);if(m.central===null&&m.quality!=='unknown'&&m.quality!=='not-applicable')m.central=deepClone(state[key]);m.reviewed=true;wizardMeta.fields[key]=m;}wizardMeta.conversationSummaries[q.reviewGroup]=buildTopicSummary(q.reviewGroup);wizardMeta.completed=false;firstCutDirty=true;persistIfEnabled();}
 function wizardNext(){
-  const q=INTERVIEW_BY_ID[wizardMeta.currentQuestionId],errors=validateQuestion(q);if(errors.length){showWizardErrors(errors);return;}
+  const q=INTERVIEW_BY_ID[wizardMeta.currentQuestionId],sync=synchroniseRenderedQuestionControls(q);if(sync.needsRerender){renderWizardStep();announce('The question has been updated to match your selected answer.');return;}const errors=validateQuestion(q);if(errors.length){showWizardErrors(errors);return;}
   if(wizardMeta.pendingWarningIds?.length){if(!commitPendingWarnings()){showWizardErrors(['Confirm each highlighted unusual input before continuing.']);return;}commitCurrentQuestion(q);advanceInterview(q);return;}
   const unconfirmed=triggeredPlausibilityWarnings(q.id).filter(w=>w.requiredConfirmation&&!w.confirmed);if(unconfirmed.length){wizardMeta.pendingWarningIds=unconfirmed.map(w=>w.id);renderWizardStep();announce('Please confirm the unusual inputs before continuing.');return;}
   if(q.id==='review'){
@@ -1439,10 +1486,10 @@ function wizardNext(){
 }
 let interviewEditReturnId=null,interviewEditReturnMode=null;
 function advanceInterview(q){applyContextMapping();ensureQuestionInPath(q.id);let next=null;if(interviewEditReturnId||interviewEditReturnMode){const end=interviewEditReturnId?questionIndex(interviewEditReturnId):INTERVIEW_QUESTION_REGISTRY.length;next=INTERVIEW_QUESTION_REGISTRY.slice(questionIndex(q.id)+1,end).find(x=>questionEligible(x,state,wizardMeta)&&x.id!=='review'&&!wizardMeta.questionState[x.id]?.answered)?.id||null;if(!next){if(interviewEditReturnMode==='firstcut'){interviewEditReturnId=null;interviewEditReturnMode=null;setAppMode('firstcut');renderFirstCut();return;}next=interviewEditReturnId||'review';interviewEditReturnId=null;interviewEditReturnMode=null;}}if(!next)next=nextSequentialQuestionId(q.id);wizardMeta.currentQuestionId=next;ensureQuestionInPath(next);wizardMeta.pendingWarningIds=[];renderWizardStep();}
-function wizardBack(){applyContextMapping();normaliseQuestionPath();const currentIndex=wizardMeta.questionPath.indexOf(wizardMeta.currentQuestionId),targetIndex=currentIndex>0?currentIndex-1:-1;if(targetIndex>=0){wizardMeta.currentQuestionId=wizardMeta.questionPath[targetIndex];wizardStep=targetIndex;wizardMeta.currentStep=wizardStep;wizardMeta.pendingWarningIds=[];renderWizardStep();}}
-function exitWizard(){if(confirm('Return to the start screen? Your current answers remain available in this browser session.'))setAppMode('landing');}
+function wizardBack(){const current=INTERVIEW_BY_ID[wizardMeta.currentQuestionId];synchroniseRenderedQuestionControls(current);applyContextMapping();normaliseQuestionPath();const currentIndex=wizardMeta.questionPath.indexOf(wizardMeta.currentQuestionId),targetIndex=currentIndex>0?currentIndex-1:-1;if(targetIndex>=0){wizardMeta.currentQuestionId=wizardMeta.questionPath[targetIndex];wizardStep=targetIndex;wizardMeta.currentStep=wizardStep;wizardMeta.pendingWarningIds=[];renderWizardStep();}}
+function exitWizard(){synchroniseRenderedQuestionControls(INTERVIEW_BY_ID[wizardMeta.currentQuestionId]);if(confirm('Return to the start screen? Your current answers remain available in this browser session.'))setAppMode('landing');}
 function showWizardErrors(errors){const box=$('wizardErrors');box.hidden=false;box.replaceChildren();const ul=document.createElement('ul');for(const e of errors){const li=document.createElement('li');li.textContent=e;ul.appendChild(li);}box.appendChild(ul);box.focus?.();announce('Please correct the interview answers.');}
-function editQuestion(id,returnTarget=null){if(!INTERVIEW_BY_ID[id]||!questionEligible(INTERVIEW_BY_ID[id],state,wizardMeta))return;if(returnTarget==='firstcut'){interviewEditReturnMode='firstcut';interviewEditReturnId=null;}else if(returnTarget){interviewEditReturnId=returnTarget;interviewEditReturnMode=null;}wizardMeta.currentQuestionId=id;ensureQuestionInPath(id);wizardMeta.pendingWarningIds=[];setAppMode('wizard');renderWizardStep();requestAnimationFrame(()=>$('wizardContent')?.querySelector('input,select,button')?.focus());}
+function editQuestion(id,returnTarget=null){if(appMode==='wizard'&&wizardMeta.currentQuestionId!==id)synchroniseRenderedQuestionControls(INTERVIEW_BY_ID[wizardMeta.currentQuestionId]);if(!INTERVIEW_BY_ID[id]||!questionEligible(INTERVIEW_BY_ID[id],state,wizardMeta))return;if(returnTarget==='firstcut'){interviewEditReturnMode='firstcut';interviewEditReturnId=null;}else if(returnTarget){interviewEditReturnId=returnTarget;interviewEditReturnMode=null;}wizardMeta.currentQuestionId=id;ensureQuestionInPath(id);wizardMeta.pendingWarningIds=[];setAppMode('wizard');renderWizardStep();requestAnimationFrame(()=>$('wizardContent')?.querySelector('input,select,button')?.focus());}
 function editReviewGroup(group,returnTarget=null){const q=INTERVIEW_QUESTION_REGISTRY.find(x=>x.reviewGroup===group&&questionEligible(x,state,wizardMeta));if(q)editQuestion(q.id,returnTarget);}
 function buildTopicSummary(group){
   const approx=k=>['approximate','range'].includes(qualityFor(k))?'about ':'',money=k=>approx(k)+formatMoney(n(state[k])),c=wizardMeta.context;let text='';
@@ -1671,7 +1718,8 @@ function bindFirstCutActions(){
   document.querySelectorAll('[data-unknown]').forEach(b=>b.addEventListener('click',()=>{setWizardQuality(b.dataset.unknown,'unknown');const q=questionsForField(b.dataset.unknown).find(x=>questionEligible(x,state,wizardMeta));if(q)editQuestion(q.id,'firstcut');else openAdvancedPlanner();}));
   document.querySelectorAll('[data-dismiss]').forEach(b=>b.addEventListener('click',()=>{if(!wizardMeta.dismissedRefinements.includes(b.dataset.dismiss))wizardMeta.dismissedRefinements.push(b.dataset.dismiss);b.closest('.refinement-card')?.remove();}));
 }
-function openAdvancedPlanner(){setAppMode('advanced');renderInputs();updateHeaderMeta();updateSaveStatus();if(!result||firstCutDirty)requestRecalculate({solve:false});}
+function syncCurrentInterviewPage(){if(appMode==='wizard')synchroniseRenderedQuestionControls(INTERVIEW_BY_ID[wizardMeta.currentQuestionId]);}
+function openAdvancedPlanner(){syncCurrentInterviewPage();setAppMode('advanced');renderInputs();updateHeaderMeta();updateSaveStatus();if(!result||firstCutDirty)requestRecalculate({solve:false});}
 function returnToFirstCut(){if(!firstCutResult||firstCutDirty){if(wizardMeta?.completed)generateFirstCutPlan();else startGuidedPlan(false);return;}setAppMode('firstcut');renderFirstCut();}
 function exportFirstCutReview(){
   if(!firstCutResult){alert('Generate a first-cut plan before exporting.');return;}
@@ -2701,6 +2749,16 @@ function adaptiveInterviewRegressionTests(from=1,to=128){
   test('165 Planned retirement cannot be earlier than age at plan start',()=>withScenario(baseScenario({currentAge:55,retirementAge:50}),()=>{wizardMeta.context.employmentStatus='working';assert(validateQuestion(INTERVIEW_BY_ID['planning-horizon']).some(x=>x.includes('cannot be earlier')),'Past retirement age was accepted for a person who is not already retired');}));
   test('166 Guided first cut requires the first day of July',()=>withScenario(baseScenario({startDate:'2026-07-15'}),()=>{assert(validateQuestion(INTERVIEW_BY_ID['about-you']).some(x=>x.includes('must start on 1 July')),'Mid-July guided start was accepted');}));
   test('167 A current-home transition must occur by the new-home purchase month',()=>withScenario(baseScenario({p1Enabled:true,p1RentStart:'2032-07-01',p2Enabled:true,p2Use:'home',p2AcquisitionDate:'2030-07-01'}),()=>{Object.assign(wizardMeta.context,{p1CurrentUse:'home',p1RentPlan:true,p1SalePlan:false,p2Plan:true});assert(validateQuestion(INTERVIEW_BY_ID['future-property-details']).some(x=>x.includes('no later than the planned purchase month')),'Late current-home transition was accepted');}));
+  test('168 Continue synchronises visible private-health answers even without change events',()=>withScenario(baseScenario({hospitalCover:false,phiGrossAnnual:0}),()=>{const q=INTERVIEW_BY_ID['health-cover'],host=document.createElement('div');host.style.display='none';document.body.appendChild(host);wizardMeta.currentQuestionId=q.id;wizardMeta.context.hasPrivateHealthInsurance=true;wizardMeta.fields.hospitalCover.central=true;wizardMeta.fields.hospitalCover.quality='exact';renderInterviewQuestion(host,q);wizardMeta.context.hasPrivateHealthInsurance=false;state.hospitalCover=false;const result=synchroniseRenderedQuestionControls(q,host);assert(result.changed&&wizardMeta.context.hasPrivateHealthInsurance===true&&state.hospitalCover===true,'Visible Yes answers were not committed');host.remove();}));
+  test('169 Invalid choice state cannot silently display the first option',()=>{const select=document.createElement('select');for(const value of ['true','false']){const option=document.createElement('option');option.value=value;option.textContent=value;select.appendChild(option);}assert(setSelectValueSafely(select,'invalid')===false&&select.value===''&&select.selectedOptions[0].disabled,'Invalid choice silently displayed Yes');});
+  test('170 Boolean context strings are normalised before routing',()=>withScenario(baseScenario(),()=>{wizardMeta.context.hasPrivateHealthInsurance='false';normaliseInterviewContext(wizardMeta);assert(wizardMeta.context.hasPrivateHealthInsurance===false&&!questionEligible(INTERVIEW_BY_ID['spending-inclusions'],state,wizardMeta),'String false was treated as true');}));
+  test('171 Back navigation commits the visible page before moving',()=>{assert(wizardBack.toString().includes('synchroniseRenderedQuestionControls'),'Back can discard an unblurred visible answer');});
+  test('172 Save draft commits the visible page before storage',()=>{const src=document.documentElement.innerHTML;assert(src.includes("synchroniseRenderedQuestionControls(INTERVIEW_BY_ID[wizardMeta.currentQuestionId])"),'Save draft can miss a visible answer');});
+  test('173 Exit commits the visible page before leaving the interview',()=>{assert(exitWizard.toString().includes('synchroniseRenderedQuestionControls'),'Exit can discard an unblurred visible answer');});
+  test('174 A new guided plan does not assume private health insurance',()=>{const fresh=createNewGuidedPlan();assert(fresh.assumptions.hospitalCover===false&&fresh.assumptions.phiGrossAnnual===0&&fresh.meta.context.hasPrivateHealthInsurance===false,'A personal private-health answer was prefilled');});
+  test('175 Moving to Advanced mode commits the visible interview page',()=>{assert(openAdvancedPlanner.toString().includes('syncCurrentInterviewPage'),'Advanced mode can open with an uncommitted visible answer');});
+  test('176 Header Home commits the visible interview page',()=>{const src=document.documentElement.innerHTML;assert(src.includes("entryHomeBtn').addEventListener('click',()=>{syncCurrentInterviewPage()"),'Header Home can discard the visible answer');});
+  test('177 Summary editing commits the page being left',()=>{assert(editQuestion.toString().includes('synchroniseRenderedQuestionControls'),'Summary edit can discard an unblurred answer');});
   return tests;
 }
 
@@ -3259,8 +3317,8 @@ function init(){
   $('exportJsonBtn').addEventListener('click',exportScenario);$('assumptionsBtn').addEventListener('click',exportPlanReview);$('annualCsvBtn').addEventListener('click',exportAnnualCSV);$('monthlyCsvBtn').addEventListener('click',exportMonthlyCSV);$('printBtn').addEventListener('click',()=>window.print());
   $('importFile').addEventListener('change',e=>{if(e.target.files&&e.target.files[0])importScenario(e.target.files[0]);e.target.value='';});$('landingImportFile').addEventListener('change',e=>{if(e.target.files&&e.target.files[0])importScenario(e.target.files[0]);e.target.value='';});
   $('expandInputsBtn').addEventListener('click',()=>document.querySelectorAll('.input-group').forEach(d=>d.open=true));$('collapseInputsBtn').addEventListener('click',()=>document.querySelectorAll('.input-group').forEach(d=>d.open=false));
-  $('startWizardBtn').addEventListener('click',()=>startGuidedPlan(false));$('openAdvancedBtn').addEventListener('click',openAdvancedPlanner);$('entryAdvancedBtn').addEventListener('click',openAdvancedPlanner);$('openAdvancedFromFirstCutBtn').addEventListener('click',openAdvancedPlanner);$('advancedHomeBtn').addEventListener('click',()=>setAppMode('landing'));$('entryHomeBtn').addEventListener('click',()=>setAppMode('landing'));$('advancedFirstCutBtn').addEventListener('click',returnToFirstCut);
-  $('wizardBackBtn').addEventListener('click',wizardBack);$('wizardNextBtn').addEventListener('click',wizardNext);$('wizardExitBtn').addEventListener('click',exitWizard);$('wizardSaveDraftBtn').addEventListener('click',()=>{if(!rememberEnabled){showWizardErrors(['Turn on Remember draft on this device before saving.']);return;}persistIfEnabled();updateSaveStatus();announce('Draft saved on this device.');});$('wizardRememberPlan').addEventListener('change',e=>setRememberEnabled(e.target.checked));$('editWizardBtn').addEventListener('click',()=>{recomputeInterviewState();wizardMeta.currentQuestionId='review';ensureQuestionInPath('review');setAppMode('wizard');renderWizardStep();});
+  $('startWizardBtn').addEventListener('click',()=>startGuidedPlan(false));$('openAdvancedBtn').addEventListener('click',openAdvancedPlanner);$('entryAdvancedBtn').addEventListener('click',openAdvancedPlanner);$('openAdvancedFromFirstCutBtn').addEventListener('click',openAdvancedPlanner);$('advancedHomeBtn').addEventListener('click',()=>setAppMode('landing'));$('entryHomeBtn').addEventListener('click',()=>{syncCurrentInterviewPage();setAppMode('landing');});$('advancedFirstCutBtn').addEventListener('click',returnToFirstCut);
+  $('wizardBackBtn').addEventListener('click',wizardBack);$('wizardNextBtn').addEventListener('click',wizardNext);$('wizardExitBtn').addEventListener('click',exitWizard);$('wizardSaveDraftBtn').addEventListener('click',()=>{synchroniseRenderedQuestionControls(INTERVIEW_BY_ID[wizardMeta.currentQuestionId]);if(!rememberEnabled){showWizardErrors(['Turn on Remember draft on this device before saving.']);return;}persistIfEnabled();updateSaveStatus();announce('Draft saved on this device.');});$('wizardRememberPlan').addEventListener('change',e=>setRememberEnabled(e.target.checked));$('editWizardBtn').addEventListener('click',()=>{recomputeInterviewState();wizardMeta.currentQuestionId='review';ensureQuestionInPath('review');setAppMode('wizard');renderWizardStep();});
   $('runSensitivityBtn').addEventListener('click',()=>generateFirstCutPlan({refresh:true}));$('exportFirstCutBtn').addEventListener('click',exportFirstCutReview);$('cancelFirstCutBtn').addEventListener('click',()=>{firstCutCancelRequested=true;firstCutToken++;showFirstCutProgress(false);announce('First-cut analysis cancelled.');});
   document.querySelectorAll('[data-firstcut-scenario]').forEach(b=>b.addEventListener('click',()=>{firstCutView=b.dataset.firstcutScenario;renderFirstCut();}));
   document.addEventListener('click',e=>{const menu=$('actionsMenu');if(menu?.open&&!menu.contains(e.target))menu.open=false;});
