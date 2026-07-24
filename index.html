@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>Australian Financial Planning Tool v3.5.0</title>
+<title>Australian Financial Planning Tool v3.6.0</title>
 <style>
 
 :root{
@@ -271,7 +271,7 @@ img,svg,canvas{max-width:100%}
     <div class="entry-topbar">
       <div>
         <div class="entry-brand">Australian Financial Planning Tool</div>
-        <div class="entry-meta">v3.5.0 · schema 9 · policy verified 21 July 2026</div>
+        <div class="entry-meta">v3.6.0 · schema 9 · policy verified 21 July 2026</div>
       </div>
       <div class="entry-actions">
         <button class="btn ghost" id="entryHomeBtn" type="button" hidden>Start and mode selection</button>
@@ -464,7 +464,7 @@ img,svg,canvas{max-width:100%}
    ================================================================ */
 
 const META = Object.freeze({
-  toolName:'Australian Financial Planning Tool',version:'3.5.0',schemaVersion:9,
+  toolName:'Australian Financial Planning Tool',version:'3.6.0',schemaVersion:9,
   policyVersion:'AU-2026-07-21-v5',buildDate:'2026-07-22',policyAsAt:'2026-07-21',currency:'AUD',
   scope:'Single Australian resident with no spouse or dependants; monthly planning with causal tax settlements, retirement-tax offsets, bounded funding and terminal closure'
 });
@@ -822,7 +822,7 @@ function wizardUnitDescriptor(key,meta=null){
   const f=F[key],basis=meta?.entryBasis||defaultWizardEntryBasis(key);if(!f)return 'Value';
   const unit=String(f.unit||'');
   if(f.type==='percent'){
-    if(unit.includes('before earnings tax'))return 'Percentage per year, before estimated tax on earnings';
+    if(unit.includes('before earnings tax'))return 'Percentage per year, before earnings tax (the estimated tax on fund earnings)';
     if(unit.includes('% of rent'))return 'Percentage of gross rent';
     if(unit.includes('% of proceeds'))return 'Percentage of sale proceeds';
     return unit.includes('p.a.')?'Percentage per year':'Percentage';
@@ -951,12 +951,12 @@ const WIZARD_FIELD_CONFIG = Object.freeze({
   p1Growth:{qualities:['exact','approximate','range','unknown'],material:true,defaultKey:'p1Growth'},
   p2Growth:{qualities:['exact','approximate','range','unknown'],material:true,defaultKey:'p2Growth'},
   p1RentGrowth:{qualities:['exact','approximate','range','unknown'],defaultKey:'p1RentGrowth'},
-  p2RentGrowth:{qualities:['exact','approximate','range','unknown'],defaultKey:'p2RentGrowth'},
   pensionIndexation:{qualities:['exact','approximate','range','unknown'],material:true,defaultKey:'pensionIndexation'}
 });
 
 const SCENARIO_VARIATION_RULES = Object.freeze({
-  retirementSpendingAnnual:{higherGood:false,moneyBand:.10},retirementAge:{higherGood:true,absoluteBand:1},baseSalary:{higherGood:true,moneyBand:.10},bonusAnnual:{higherGood:true,moneyBand:.25},salaryGrowth:{higherGood:true,rateBand:.01},bonusGrowth:{higherGood:true,rateBand:.01},careerChangeDate:{higherGood:true,dateMonths:12},salarySacrificeAnnual:{higherGood:true,moneyBand:.15,rangeOnly:true},personalDeductibleAnnual:{higherGood:true,moneyBand:.15,rangeOnly:true},afterTaxSuperAnnual:{higherGood:true,moneyBand:.15,rangeOnly:true},livingAnnual:{higherGood:false,moneyBand:.10},travelAnnual:{higherGood:false,moneyBand:.15},discretionaryAnnual:{higherGood:false,moneyBand:.15},phiGrossAnnual:{higherGood:false,moneyBand:.10},minimumCashBuffer:{higherGood:false,moneyBand:.10},openingCash:{higherGood:true,moneyBand:.10},openingInvestments:{higherGood:true,moneyBand:.10},openingInvestmentCostBase:{higherGood:true,moneyBand:.10},savingsReturn:{higherGood:true,rateBand:.01},investmentDividendYield:{higherGood:true,rateBand:.005},investmentCapitalGrowth:{higherGood:true,rateBand:.015},investmentFees:{higherGood:false,rateBand:.0025},openingSuperAccum:{higherGood:true,moneyBand:.10},openingSuperPension:{higherGood:true,moneyBand:.10},superAccumReturn:{higherGood:true,rateBand:.015},superPensionReturn:{higherGood:true,rateBand:.015},p1MarketValue:{higherGood:true,moneyBand:.10},p1CostBase:{higherGood:true,moneyBand:.10},p1LoanOpening:{higherGood:false,moneyBand:.10},p1LoanRate:{higherGood:false,rateBand:.01},p1LoanTermYears:{higherGood:true,absoluteBand:3},p1RentAnnual:{higherGood:true,moneyBand:.10},p1HoldingAnnual:{higherGood:false,moneyBand:.10},p1SaleDate:{higherGood:false,dateMonths:12},p1Growth:{higherGood:true,rateBand:.01},p1RentGrowth:{higherGood:true,rateBand:.01},p2AcquisitionDate:{higherGood:true,dateMonths:12},p2PurchasePrice:{higherGood:false,moneyBand:.10},p2LoanAmount:{higherGood:false,moneyBand:.10},p2LoanRate:{higherGood:false,rateBand:.01},p2LoanTermYears:{higherGood:true,absoluteBand:3},p2RentAnnual:{higherGood:true,moneyBand:.10},p2HoldingAnnual:{higherGood:false,moneyBand:.10},p2SaleDate:{higherGood:false,dateMonths:12},p2Growth:{higherGood:true,rateBand:.01},p2RentGrowth:{higherGood:true,rateBand:.01},facilityLimit:{higherGood:true,moneyBand:.20},facilityRate:{higherGood:false,rateBand:.01},facilityStartAge:{higherGood:false,absoluteBand:2},initialOneOffCost:{higherGood:false,moneyBand:.20},majorFutureCostDate:{higherGood:true,dateMonths:12},majorFutureCostAmount:{higherGood:false,moneyBand:.20},inflation:{higherGood:false,rateBand:.005},pensionIndexation:{higherGood:true,rateBand:.005},targetTerminalLiquidEstate:{higherGood:false,moneyBand:.20}
+  retirementSpendingAnnual:{higherGood:false,moneyBand:.10},retirementAge:{higherGood:true,absoluteBand:1},baseSalary:{higherGood:true,moneyBand:.10},bonusAnnual:{higherGood:true,moneyBand:.25},salaryGrowth:{higherGood:true,rateBand:.01},bonusGrowth:{higherGood:true,rateBand:.01},careerChangeDate:{higherGood:true,dateMonths:12},salarySacrificeAnnual:{higherGood:true,moneyBand:.15,rangeOnly:true},personalDeductibleAnnual:{higherGood:true,moneyBand:.15,rangeOnly:true},afterTaxSuperAnnual:{higherGood:true,moneyBand:.15,rangeOnly:true},livingAnnual:{higherGood:false,moneyBand:.10},travelAnnual:{higherGood:false,moneyBand:.15},discretionaryAnnual:{higherGood:false,moneyBand:.15},phiGrossAnnual:{higherGood:false,moneyBand:.10},minimumCashBuffer:{higherGood:false,moneyBand:.10},openingCash:{higherGood:true,moneyBand:.10},openingInvestments:{higherGood:true,moneyBand:.10},openingInvestmentCostBase:{higherGood:true,moneyBand:.10},savingsReturn:{higherGood:true,rateBand:.01},investmentDividendYield:{higherGood:true,rateBand:.005},investmentCapitalGrowth:{higherGood:true,rateBand:.015},investmentFees:{higherGood:false,rateBand:.0025},openingSuperAccum:{higherGood:true,moneyBand:.10},openingSuperPension:{higherGood:true,moneyBand:.10},superAccumReturn:{higherGood:true,rateBand:.015},superPensionReturn:{higherGood:true,rateBand:.015},p1MarketValue:{higherGood:true,moneyBand:.10},p1CostBase:{higherGood:true,moneyBand:.10},p1LoanOpening:{higherGood:false,moneyBand:.10},p1LoanRate:{higherGood:false,rateBand:.01},p1LoanTermYears:{higherGood:true,absoluteBand:3},p1RentAnnual:{higherGood:true,moneyBand:.10},p1HoldingAnnual:{higherGood:false,moneyBand:.10},p1SaleDate:{higherGood:false,dateMonths:12},p1Growth:{higherGood:true,rateBand:.01},p1RentGrowth:{higherGood:true,rateBand:.01},p2AcquisitionDate:{higherGood:true,dateMonths:12},p2PurchasePrice:{higherGood:false,moneyBand:.10},p2LoanAmount:{higherGood:false,moneyBand:.10},p2LoanRate:{higherGood:false,rateBand:.01},p2LoanTermYears:{higherGood:true,absoluteBand:3},p2RentAnnual:{higherGood:true,moneyBand:.10},p2HoldingAnnual:{higherGood:false,moneyBand:.10},p2SaleDate:{higherGood:false,dateMonths:12},p2Growth:{higherGood:true,rateBand:.01},p2RentGrowth:{higherGood:true,rateBand:.01},facilityLimit:{higherGood:true,moneyBand:.20},facilityRate:{higherGood:false,rateBand:.01},facilityStartAge:{higherGood:false,absoluteBand:2},initialOneOffCost:{higherGood:false,moneyBand:.20},majorFutureCostDate:{higherGood:true,dateMonths:12},majorFutureCostAmount:{higherGood:false,moneyBand:.20},inflation:{higherGood:false,rateBand:.005},pensionIndexation:{higherGood:true,rateBand:.005},targetTerminalLiquidEstate:{higherGood:false,moneyBand:.20},
+  p1ManagementPct:{higherGood:false,rateBand:.01,rangeOnly:true},p1AcquisitionCosts:{higherGood:true,moneyBand:.15,rangeOnly:true},p1CapitalImprovements:{higherGood:true,moneyBand:.15,rangeOnly:true},p1CapitalLosses:{higherGood:true,moneyBand:.15,rangeOnly:true},p2ManagementPct:{higherGood:false,rateBand:.01,rangeOnly:true},p2AcquisitionCosts:{higherGood:true,moneyBand:.15,rangeOnly:true}
 });
 
 const MATERIAL_WIZARD_FIELDS = Object.freeze(Object.keys(WIZARD_FIELD_CONFIG).filter(k=>WIZARD_FIELD_CONFIG[k].material));
@@ -966,7 +966,7 @@ const NARRATIVE_VERSION='3.5.0-rules-4';
 const WIZARD_CONTEXT_DEFAULTS_V35=Object.freeze({
   employmentStatus:'working',futureWorkExpected:false,hasRegularBonus:false,expectsCareerChange:false,
   hasVoluntaryContributions:false,spendingMethod:'total',spendingIncludesHealth:false,
-  hasPrivateHealthInsurance:false,spendingIncludesPropertyCosts:false,spendingIncludesHousing:false,hasInvestments:false,
+  hasPrivateHealthInsurance:false,spendingIncludesPropertyCosts:false,spendingIncludesHousing:false,hasInvestments:false,hasPensionSuper:false,
   p1CurrentUse:'home',p1MortgageStatus:'owned-outright',p1RentPlan:false,p1SalePlan:false,
   p2Plan:false,p2BorrowingExpected:false,retirementSpendingPattern:'custom',superBridgeSource:'cash-investments',
   majorFutureCosts:false,borrowingAcceptable:false,assumptionMode:'defaults',acknowledged:false
@@ -983,6 +983,7 @@ const INTERVIEW_CONTEXT_FIELDS=Object.freeze({
   spendingIncludesPropertyCosts:{label:'Does that amount already include property costs such as rates, insurance and maintenance?',options:[['true','Yes'],['false','No']],boolean:true,help:'Select Yes so those costs are not added again.'},
   spendingIncludesHousing:{label:'Does your spending estimate already include rent?',options:[['true','Yes, rent is included'],['false','No rent is included']],boolean:true,help:'If you have a mortgage, leave mortgage repayments out of this spending estimate because the property loan is modelled separately.'},
   hasInvestments:{label:'Do you have investments outside super?',options:[['true','Yes'],['false','No']],boolean:true,help:'Select No and the investment value, return, fee and tax questions will be skipped.'},
+  hasPensionSuper:{label:'Do you have a super account currently paying you a retirement income?',options:[['true','Yes'],['false','No']],boolean:true,help:'This means a retirement-phase or account-based pension that already pays you a regular income. Select No and the retirement-income balance question will be skipped.'},
   p1CurrentUse:{label:'How do you use this property?',options:[['home','It is the home I live in'],['investment','It is a rental or investment property']],help:'A rental or investment property is treated as assessable from the plan start. A separate private-use property that is not your home is outside this first-cut model.'},
   p1MortgageStatus:{label:'Do you currently owe money on this property?',options:[['mortgage','Yes'],['owned-outright','No, it is owned outright']],help:'Select No and the loan questions will be skipped.'},
   p1RentPlan:{label:'Will this property earn rent at any point in the plan?',options:[['true','Yes'],['false','No']],boolean:true,help:'Select No and the rent questions will be skipped.'},
@@ -1028,7 +1029,7 @@ const INTERVIEW_QUESTION_REGISTRY=Object.freeze([
   {id:'retirement-spending',prompt:'How much would you like to spend each year in retirement?',explanation:'Enter the amount in today’s dollars. Costs entered separately will be added separately.',fields:['retirementSpendingAnnual'],contextFields:[],answerType:'money',unit:'Australian dollars per year in plan-start dollars',entryConvention:'The model annualises monthly entries',inputQualityOptions:['exact','approximate','range','unknown'],prerequisite:(s,c)=>c.employmentStatus!=='retired',skipWhen:(s,c)=>c.employmentStatus==='retired',followUps:['cash-and-investments'],validationRules:['non-negative-retirement-spending'],plausibilityRules:['retirement-spending-low','retirement-spending-high','retirement-spending-monthly-annual'],confirmationRules:['confirm-derived-spending'],summary:'retirement spending',material:true,allowDefault:false,unknownBehaviour:'The plan becomes indeterminate',ariaLabel:'Annual retirement spending in today’s dollars',reviewGroup:'retirement',advancedFields:['retirementSpendingAnnual']},
   {id:'cash-and-investments',prompt:'What accessible cash do you have today?',explanation:'This money can be used before you can access super. The next question covers investments outside super if you have them.',fields:['openingCash','minimumCashBuffer'],contextFields:['hasInvestments'],answerType:'money-choice',unit:'Current total Australian-dollar balances',entryConvention:'Current balances, not annual flows',inputQualityOptions:['exact','approximate','range','unknown'],prerequisite:()=>true,skipWhen:()=>false,followUps:['investment-details','super-balances'],validationRules:['non-negative-assets'],plausibilityRules:['very-large-cash'],confirmationRules:[],summary:'accessible assets',material:true,allowDefault:false,unknownBehaviour:'Unknown accessible assets reduce reliability',ariaLabel:'Accessible cash and whether investments outside super are held',reviewGroup:'assets',advancedFields:['openingCash','minimumCashBuffer','openingInvestments']},
   {id:'investment-details',prompt:'Tell me about your investments outside super.',explanation:'The amount originally paid helps estimate Capital Gains Tax if investments are sold. It is acceptable to say you are not sure.',fields:['openingInvestments','openingInvestmentCostBase','investmentDividendYield','investmentCapitalGrowth','investmentFees'],contextFields:[],answerType:'money-percent',unit:'Current balances and percentage per year',entryConvention:'Enter 4 for 4%, not 0.04',inputQualityOptions:['exact','approximate','range','unknown'],prerequisite:(s,c)=>!!c.hasInvestments,skipWhen:(s,c)=>!c.hasInvestments,followUps:['super-balances'],validationRules:['investment-cost-base'],plausibilityRules:['investment-return-range','investment-fee-range','investment-cost-base-ratio'],confirmationRules:[],summary:'investments outside super',material:true,allowDefault:true,unknownBehaviour:'A disclosed cost-base assumption is used where needed',ariaLabel:'Investments outside super and their assumptions',reviewGroup:'assets',advancedFields:['openingInvestments','openingInvestmentCostBase','investmentDividendYield','investmentCapitalGrowth','investmentFees']},
-  {id:'super-balances',prompt:'What is in super today?',explanation:'Use the latest total balances you can find. Long-term return assumptions are reviewed later or taken from the tool’s disclosed defaults.',fields:['openingSuperAccum','openingSuperPension'],contextFields:[],answerType:'money',unit:'Current total Australian-dollar balances',entryConvention:'Current balances, not annual contributions',inputQualityOptions:['exact','approximate','range','unknown'],prerequisite:()=>true,skipWhen:()=>false,followUps:['property-ownership'],validationRules:['non-negative-super'],plausibilityRules:[],confirmationRules:[],summary:'super balances',material:true,allowDefault:false,unknownBehaviour:'Unknown super balances reduce reliability',ariaLabel:'Current superannuation balances',reviewGroup:'super',advancedFields:['openingSuperAccum','openingSuperPension']},
+  {id:'super-balances',prompt:'What is in super today?',explanation:'Use the latest total balances you can find. Long-term return assumptions are reviewed later or taken from the tool’s disclosed defaults.',fields:['openingSuperAccum','openingSuperPension'],contextFields:['hasPensionSuper'],answerType:'money',unit:'Current total Australian-dollar balances',entryConvention:'Current balances, not annual contributions',inputQualityOptions:['exact','approximate','range','unknown'],prerequisite:()=>true,skipWhen:()=>false,followUps:['property-ownership'],validationRules:['non-negative-super'],plausibilityRules:[],confirmationRules:[],summary:'super balances',material:true,allowDefault:false,unknownBehaviour:'Unknown super balances reduce reliability',ariaLabel:'Current superannuation balances',reviewGroup:'super',advancedFields:['openingSuperAccum','openingSuperPension']},
   {id:'property-ownership',prompt:'Do you currently own a property to include in this first-cut plan?',explanation:'The first-cut interview supports one property owned today. Use the property that is most relevant to this plan.',fields:['p1Enabled'],contextFields:[],answerType:'choice',unit:'Not applicable',entryConvention:'Select Yes or No',inputQualityOptions:['exact'],prerequisite:()=>true,skipWhen:()=>false,followUps:['property-details','future-property-choice'],validationRules:[],plausibilityRules:[],confirmationRules:[],summary:'property ownership',material:true,allowDefault:false,unknownBehaviour:'No current property is assumed',ariaLabel:'Whether any property is currently owned',reviewGroup:'property',advancedFields:['p1Enabled']},
   {id:'property-details',prompt:'Tell me about the property you own.',explanation:'Use the current value and what you paid, where known. Confirm whether yearly ownership costs were already included in your spending.',fields:['p1MarketValue','p1PurchaseDate','p1CostBase','p1HoldingAnnual'],contextFields:['p1CurrentUse','p1MortgageStatus','spendingIncludesPropertyCosts'],answerType:'choice-date-money',unit:'Current value, purchase date and Australian dollars per year',entryConvention:'Current value and annual ownership costs',inputQualityOptions:['exact','approximate','range','unknown'],prerequisite:s=>!!s.p1Enabled,skipWhen:s=>!s.p1Enabled,followUps:['property-loan','property-rental-choice'],validationRules:['property-values'],plausibilityRules:['property-cost-base-ratio'],confirmationRules:[],summary:'current property',material:true,allowDefault:true,unknownBehaviour:'Unknown purchase cost makes sale tax less precise',ariaLabel:'Current property value, use, debt status and ownership costs',reviewGroup:'property',advancedFields:['p1MarketValue','p1PurchaseDate','p1CostBase','p1HoldingAnnual','p1CurrentUse']},
   {id:'property-loan',prompt:'Tell me about the loan on this property.',explanation:'These questions appear only when money is still owed on the property.',fields:['p1LoanOpening','p1LoanRate','p1LoanTermYears','p1ExtraRepaymentAnnual'],contextFields:[],answerType:'money-percent-number',unit:'Current balance, percentage per year and remaining years',entryConvention:'Enter 6 for 6%',inputQualityOptions:['exact','approximate','range','unknown'],prerequisite:(s,c)=>s.p1Enabled&&c.p1MortgageStatus==='mortgage',skipWhen:(s,c)=>!s.p1Enabled||c.p1MortgageStatus!=='mortgage',followUps:['property-rental-choice'],validationRules:['loan-consistency'],plausibilityRules:['zero-loan-with-repayment','nonzero-loan-zero-rate'],confirmationRules:[],summary:'property loan',material:true,allowDefault:true,unknownBehaviour:'Unknown loan terms reduce reliability',ariaLabel:'Current property loan',reviewGroup:'property',advancedFields:['p1LoanOpening','p1LoanRate','p1LoanTermYears','p1ExtraRepaymentAnnual']},
@@ -1091,7 +1092,7 @@ function createWizardMeta(assumptions=DEFAULTS,source='advanced-planner'){
   context.employmentStatus=num(assumptions.baseSalary)>0?'working':num(assumptions.currentAge)>=num(assumptions.retirementAge)?'retired':'not-working';
   context.futureWorkExpected=num(assumptions.baseSalary)>0;context.hasRegularBonus=num(assumptions.bonusAnnual)>0;context.expectsCareerChange=!!assumptions.careerChangeEnabled;
   context.hasVoluntaryContributions=num(assumptions.salarySacrificeAnnual)+num(assumptions.personalDeductibleAnnual)+num(assumptions.afterTaxSuperAnnual)>0;
-  context.hasPrivateHealthInsurance=!!assumptions.hospitalCover||num(assumptions.phiGrossAnnual)>0;context.spendingMethod=num(assumptions.travelAnnual)+num(assumptions.discretionaryAnnual)>0?'broad':'total';context.hasInvestments=num(assumptions.openingInvestments)>0;
+  context.hasPrivateHealthInsurance=!!assumptions.hospitalCover||num(assumptions.phiGrossAnnual)>0;context.spendingMethod=num(assumptions.travelAnnual)+num(assumptions.discretionaryAnnual)>0?'broad':'total';context.hasInvestments=num(assumptions.openingInvestments)>0;context.hasPensionSuper=num(assumptions.openingSuperPension)>0;
   context.p1CurrentUse=assumptions.p1RentEnabled&&onOrAfter(assumptions.startDate,assumptions.p1RentStart)?'investment':'home';context.p1MortgageStatus=num(assumptions.p1LoanOpening)>0?'mortgage':'owned-outright';context.p1RentPlan=!!assumptions.p1RentEnabled&&context.p1CurrentUse==='home';context.p1SalePlan=!!assumptions.p1SaleEnabled;context.p2Plan=!!assumptions.p2Enabled;context.p2BorrowingExpected=num(assumptions.p2LoanAmount)>0;
   context.majorFutureCosts=!!assumptions.majorFutureCostEnabled;context.borrowingAcceptable=!!assumptions.facilityEnabled;context.assumptionMode=source==='advanced-planner'?'manual':'defaults';
   return {version:INTERVIEW_SCHEMA_VERSION,started:false,completed:false,currentQuestionId:'about-you',currentStep:0,context,fields,questionState,questionPath:[],skippedQuestions:{},inactiveFields:[],clarificationHistory:[],confirmedWarnings:{},pendingWarningIds:[],dismissedRefinements:[],conversationSummaries:{},generatedAt:null,informationQuality:null,scenarioHash:null,narrativeVersion:NARRATIVE_VERSION};
@@ -1109,7 +1110,7 @@ function migrateLegacyWizard(legacy,assumptions){
   const meta=createWizardMeta(assumptions,'imported');meta.started=!!legacy?.started;meta.completed=!!legacy?.completed;meta.context={...meta.context,...(legacy?.context||{})};
   if(legacy?.fields)for(const [k,v] of Object.entries(legacy.fields)){if(meta.fields[k])meta.fields[k]={...meta.fields[k],...deepClone(v),source:v.source==='user'?'imported':v.source,active:true};}
   if(meta.context.employmentStatus==='working'){meta.context.hasRegularBonus=n(assumptions.bonusAnnual)>0;meta.context.expectsCareerChange=!!assumptions.careerChangeEnabled;meta.context.hasVoluntaryContributions=n(assumptions.salarySacrificeAnnual)+n(assumptions.personalDeductibleAnnual)+n(assumptions.afterTaxSuperAnnual)>0;}
-  meta.context.hasPrivateHealthInsurance=!!assumptions.hospitalCover||n(assumptions.phiGrossAnnual)>0;meta.context.hasInvestments=n(assumptions.openingInvestments)>0;meta.context.p1MortgageStatus=n(assumptions.p1LoanOpening)>0?'mortgage':'owned-outright';meta.context.p1RentPlan=!!assumptions.p1RentEnabled;meta.context.p1SalePlan=!!assumptions.p1SaleEnabled;meta.context.p2Plan=!!assumptions.p2Enabled;meta.context.p2BorrowingExpected=n(assumptions.p2LoanAmount)>0;meta.context.majorFutureCosts=!!assumptions.majorFutureCostEnabled;meta.context.borrowingAcceptable=!!assumptions.facilityEnabled;
+  meta.context.hasPrivateHealthInsurance=!!assumptions.hospitalCover||n(assumptions.phiGrossAnnual)>0;meta.context.hasInvestments=n(assumptions.openingInvestments)>0;meta.context.hasPensionSuper=n(assumptions.openingSuperPension)>0;meta.context.p1MortgageStatus=n(assumptions.p1LoanOpening)>0?'mortgage':'owned-outright';meta.context.p1RentPlan=!!assumptions.p1RentEnabled;meta.context.p1SalePlan=!!assumptions.p1SaleEnabled;meta.context.p2Plan=!!assumptions.p2Enabled;meta.context.p2BorrowingExpected=n(assumptions.p2LoanAmount)>0;meta.context.majorFutureCosts=!!assumptions.majorFutureCostEnabled;meta.context.borrowingAcceptable=!!assumptions.facilityEnabled;
   for(const q of INTERVIEW_QUESTION_REGISTRY){const qs=meta.questionState[q.id];if(q.id==='review')continue;qs.answered=meta.completed||questionActiveFields(q,assumptions,meta).every(k=>meta.fields[k]?.reviewed||meta.fields[k]?.source==='model-default'||q.contextFields?.length);}
   recomputeInterviewState(assumptions,meta);meta.currentQuestionId=meta.completed?'review':nextEligibleQuestionId(meta,null)||'about-you';meta.questionPath=eligibleQuestionIds(assumptions,meta).filter(id=>meta.questionState[id].answered);if(meta.completed&&!meta.questionPath.includes('review'))meta.questionPath.push('review');return meta;
 }
@@ -1159,6 +1160,7 @@ function questionActiveFields(q,assumptions=state,meta=wizardMeta){
   if(q.id==='current-spending')fields=spendingMethod==='total'?['livingAnnual']:['livingAnnual','travelAnnual','discretionaryAnnual',...(wizardContextFrom(meta,'hasPrivateHealthInsurance')?['phiGrossAnnual']:[])];
   if(q.id==='spending-inclusions')fields=spendingMethod==='total'&&wizardContextFrom(meta,'hasPrivateHealthInsurance')&&!wizardContextFrom(meta,'spendingIncludesHealth')?['phiGrossAnnual']:[];
   if(q.id==='investment-details'&&!wizardContextFrom(meta,'hasInvestments'))fields=[];
+  if(q.id==='super-balances'&&!wizardContextFrom(meta,'hasPensionSuper'))fields=fields.filter(k=>k!=='openingSuperPension');
   if(q.id==='property-details'&&wizardContextFrom(meta,'spendingIncludesPropertyCosts'))fields=fields.filter(k=>k!=='p1HoldingAnnual');
   if(q.id==='property-loan'&&wizardContextFrom(meta,'p1MortgageStatus')!=='mortgage')fields=[];
   if(q.id==='property-rental-details'&&wizardContextFrom(meta,'p1CurrentUse')==='investment')fields=fields.filter(k=>k!=='p1RentStart');
@@ -1243,6 +1245,7 @@ function applyContextMapping(){
   if(c.spendingMethod==='total'){state.travelAnnual=0;state.discretionaryAnnual=0;}
   if(!c.hasPrivateHealthInsurance){state.hospitalCover=false;state.phiGrossAnnual=0;}else if(c.spendingMethod==='total'&&c.spendingIncludesHealth)state.phiGrossAnnual=0;
   if(!c.hasInvestments){state.openingInvestments=0;state.openingInvestmentCostBase=0;state.investmentDividendYield=0;state.investmentCapitalGrowth=0;state.investmentFees=0;}
+  if(!c.hasPensionSuper){state.openingSuperPension=0;}
   if(!state.p1Enabled){state.p1LoanOpening=0;state.p1RentEnabled=false;state.p1SaleEnabled=false;}else{
     if(c.p1MortgageStatus==='owned-outright'){state.p1LoanOpening=0;state.p1ExtraRepaymentAnnual=0;state.p1LoanDeductiblePct=0;}
     const currentInvestment=c.p1CurrentUse==='investment';state.p1RentEnabled=currentInvestment||!!c.p1RentPlan;if(currentInvestment){const rentStartMeta=wizardMeta.fields.p1RentStart||makeFieldMeta('p1RentStart');preserveAnswerBeforeDerivation(rentStartMeta);Object.assign(rentStartMeta,{central:state.startDate,lower:null,upper:null,quality:'exact',source:'model-derived',confidenceNote:'A current investment property is treated as rented or genuinely available for rent from the plan start.',reviewed:false});wizardMeta.fields.p1RentStart=rentStartMeta;state.p1RentStart=state.startDate;}else restoreAnswerAfterDerivation(wizardMeta.fields.p1RentStart||makeFieldMeta('p1RentStart'),'p1RentStart');if(!state.p1RentEnabled)state.p1RentAnnual=0;
@@ -1286,7 +1289,8 @@ function interviewContextCopy(key,cfg){
 function renderWizardStep(){
   applyContextMapping();let id=wizardMeta.currentQuestionId||nextEligibleQuestionId();if(!INTERVIEW_BY_ID[id]||!questionEligible(INTERVIEW_BY_ID[id],state,wizardMeta))id=nextEligibleQuestionId(wizardMeta,null);wizardMeta.currentQuestionId=id;ensureQuestionInPath(id);const q=INTERVIEW_BY_ID[id],copy=interviewQuestionCopy(q),p=questionProgress();
   $('wizardStepLabel').textContent=q.id==='review'?'Final review':'Planning interview';$('wizardTitle').textContent=copy.prompt;$('wizardIntro').textContent=copy.explanation;$('wizardProgress').max=100;$('wizardProgress').value=p.pct;$('wizardProgressText').textContent=p.pct+'%';$('wizardBackBtn').disabled=wizardStep<=0;$('wizardNextBtn').textContent=q.id==='review'?'Generate plan':wizardMeta.pendingWarningIds?.length?'Confirm and continue':'Continue';$('wizardErrors').hidden=true;$('wizardErrors').textContent='';
-  const understood=$('wizardUnderstood');understood.replaceChildren();understood.hidden=true;const completedGroup=latestCompletedGroup(q.id);if(completedGroup){const summary=buildTopicSummary(completedGroup);if(summary){const card=document.createElement('section');card.className='understood-card';const h=document.createElement('h2');h.textContent='What I have understood so far';const para=document.createElement('p');para.textContent=summary.text;card.append(h,para);const edit=document.createElement('button');edit.type='button';edit.className='btn ghost small';edit.textContent='Edit '+(INTERVIEW_REVIEW_GROUPS.find(g=>g.id===completedGroup)?.title||'this');edit.addEventListener('click',()=>editReviewGroup(completedGroup,q.id));card.appendChild(edit);understood.appendChild(card);understood.hidden=false;}}
+  const understood=$('wizardUnderstood');understood.replaceChildren();understood.hidden=true;
+  try{const completedGroup=latestCompletedGroup(q.id);if(completedGroup){const summary=buildTopicSummary(completedGroup);if(summary){const card=document.createElement('section');card.className='understood-card';const h=document.createElement('h2');h.textContent='What I have understood so far';const para=document.createElement('p');para.textContent=summary.text;card.append(h,para);const edit=document.createElement('button');edit.type='button';edit.className='btn ghost small';edit.textContent='Edit '+(INTERVIEW_REVIEW_GROUPS.find(g=>g.id===completedGroup)?.title||'this');edit.addEventListener('click',()=>editReviewGroup(completedGroup,q.id));card.appendChild(edit);understood.appendChild(card);understood.hidden=false;}}}catch(understoodError){console.error('Understood-so-far summary card failed to render; core question is unaffected',understoodError);understood.replaceChildren();understood.hidden=true;}
   const root=$('wizardContent');root.replaceChildren();if(q.id==='review')renderInterviewReview(root);else renderInterviewQuestion(root,q);announce((q.id==='review'?'Review: ':'Question: ')+copy.prompt);
 }
 function renderInterviewQuestion(root,q){
@@ -1313,7 +1317,7 @@ function endWizardNavigationIntent(){wizardNavigationIntent=false;if(wizardNavig
 function replaceWizardFieldCard(box,key,focusId=''){
   if(!box?.isConnected)return;
   const next=renderWizardFieldQuestion(key);box.replaceWith(next);
-  if(focusId)requestAnimationFrame(()=>next.querySelector('#'+CSS.escape(focusId))?.focus());
+  if(focusId)requestAnimationFrame(()=>next.querySelector('#'+escapeCssIdentifier(focusId))?.focus());
 }
 function renderInterviewContextControl(key){
   const cfg=INTERVIEW_CONTEXT_FIELDS[key],copy=interviewContextCopy(key,cfg),box=document.createElement('div');box.className='wizard-question context-question';const label=document.createElement('label');label.htmlFor='wizctx_'+key;label.textContent=copy.label;const help=document.createElement('div');help.className='question-help';help.textContent=copy.help;const select=document.createElement('select');select.id='wizctx_'+key;select.className='wizard-context-control';for(const [v,l] of cfg.options){const o=document.createElement('option');o.value=v;o.textContent=l;select.appendChild(o);}const value=wizardContext(key);setSelectValueSafely(select,cfg.boolean?String(parseInterviewBoolean(value)):String(value));select.addEventListener('change',()=>{wizardMeta.context[key]=cfg.boolean?parseInterviewBoolean(select.value):select.value;wizardMeta.completed=false;wizardMeta.pendingWarningIds=[];firstCutDirty=true;applyContextMapping();invalidateInterpretationCaches();persistIfEnabled();if(!wizardNavigationIntent)renderWizardStep();});box.append(label,help,select);return box;
@@ -1463,7 +1467,7 @@ function reconcileContextFromRenderedSurface(q,surface,pendingContext){
 }
 function synchroniseRenderedQuestionControls(q,root=document.getElementById('wizardContent')||document){
   if(!q)return {needsRerender:false,changed:false,surfaceChanged:false};
-  const find=id=>root?.querySelector?root.querySelector('#'+CSS.escape(id)):document.getElementById(id),surface=renderedQuestionSurface(root),pendingContext={},snapshots=[];
+  const find=id=>root?.querySelector?root.querySelector('#'+escapeCssIdentifier(id)):document.getElementById(id),surface=renderedQuestionSurface(root),pendingContext={},snapshots=[];
   let changed=false,incomplete=false;normaliseInterviewContext(wizardMeta);
   for(const key of surface.contextKeys){
     const cfg=INTERVIEW_CONTEXT_FIELDS[key],control=find('wizctx_'+key);if(!cfg||!control)continue;
@@ -1509,8 +1513,8 @@ function validateQuestion(q){
 function warningSignature(rule,s=state){return rule.fields.map(k=>k+':'+JSON.stringify(s[k])).join('|');}
 function triggeredPlausibilityWarnings(questionId=null,s=state,meta=wizardMeta){return PLAUSIBILITY_RULE_REGISTRY.filter(rule=>(!questionId||rule.questionId===questionId||questionId==='review')&&rule.trigger(s,meta)).map(rule=>({...rule,confirmed:meta.confirmedWarnings?.[rule.id]?.signature===warningSignature(rule,s)}));}
 function renderPlausibilityConfirmation(warnings){const box=document.createElement('section');box.className='plausibility-panel';const h=document.createElement('h2');h.textContent='Please confirm these unusual inputs';box.appendChild(h);for(const w of warnings){const card=document.createElement('div');card.className='plausibility-warning '+w.severity;const title=document.createElement('strong');title.textContent=typeof w.explanation==='function'?w.explanation(state,wizardMeta):w.explanation;const why=document.createElement('p');why.textContent=w.why;const check=document.createElement('p');check.className='small';check.textContent=typeof w.suggestedChecks==='function'?w.suggestedChecks(state,wizardMeta):w.suggestedChecks;const label=document.createElement('label');label.className='warning-confirm';const cb=document.createElement('input');cb.type='checkbox';cb.dataset.confirmWarning=w.id;cb.checked=false;const txt=document.createElement('span');txt.textContent='I have checked this and want the tool to keep the entered value.';label.append(cb,txt);card.append(title,why,check,label);box.appendChild(card);}return box;}
-function commitPendingWarnings(){for(const id of wizardMeta.pendingWarningIds||[]){const cb=document.querySelector('[data-confirm-warning="'+CSS.escape(id)+'"]');if(!cb?.checked)return false;const rule=PLAUSIBILITY_BY_ID[id];wizardMeta.confirmedWarnings[id]={signature:warningSignature(rule),confirmedAt:new Date().toISOString(),questionId:wizardMeta.currentQuestionId};wizardMeta.clarificationHistory.push({type:'plausibility-confirmation',ruleId:id,questionId:wizardMeta.currentQuestionId,at:new Date().toISOString()});}wizardMeta.pendingWarningIds=[];return true;}
-function commitCurrentQuestion(q){const qs=wizardMeta.questionState[q.id]||(wizardMeta.questionState[q.id]=makeQuestionState(q.id));qs.answered=true;qs.active=true;qs.restored=false;qs.lastCommitted=new Date().toISOString();for(const key of questionActiveFields(q)){const m=wizardMeta.fields[key]||makeFieldMeta(key);if(m.central===null&&m.quality!=='unknown'&&m.quality!=='not-applicable')m.central=deepClone(state[key]);m.reviewed=true;wizardMeta.fields[key]=m;}wizardMeta.conversationSummaries[q.reviewGroup]=buildTopicSummary(q.reviewGroup);wizardMeta.completed=false;firstCutDirty=true;persistIfEnabled();}
+function commitPendingWarnings(){for(const id of wizardMeta.pendingWarningIds||[]){const cb=document.querySelector('[data-confirm-warning="'+escapeCssIdentifier(id)+'"]');if(!cb?.checked)return false;const rule=PLAUSIBILITY_BY_ID[id];wizardMeta.confirmedWarnings[id]={signature:warningSignature(rule),confirmedAt:new Date().toISOString(),questionId:wizardMeta.currentQuestionId};wizardMeta.clarificationHistory.push({type:'plausibility-confirmation',ruleId:id,questionId:wizardMeta.currentQuestionId,at:new Date().toISOString()});}wizardMeta.pendingWarningIds=[];return true;}
+function commitCurrentQuestion(q){const qs=wizardMeta.questionState[q.id]||(wizardMeta.questionState[q.id]=makeQuestionState(q.id));qs.answered=true;qs.active=true;qs.restored=false;qs.lastCommitted=new Date().toISOString();for(const key of questionActiveFields(q)){const m=wizardMeta.fields[key]||makeFieldMeta(key);if(m.central===null&&m.quality!=='unknown'&&m.quality!=='not-applicable')m.central=deepClone(state[key]);m.reviewed=true;wizardMeta.fields[key]=m;}try{wizardMeta.conversationSummaries[q.reviewGroup]=buildTopicSummary(q.reviewGroup);}catch(summaryError){console.error('Topic summary write failed on commit; navigation continues',summaryError);}wizardMeta.completed=false;firstCutDirty=true;persistIfEnabled();}
 let wizardTransitionInProgress=false;
 function wizardNextLabel(){const q=INTERVIEW_BY_ID[wizardMeta?.currentQuestionId];return q?.id==='review'?'Generate plan':wizardMeta?.pendingWarningIds?.length?'Confirm and continue':'Continue';}
 function setWizardTransitionBusy(busy){const screen=$('wizardScreen'),button=$('wizardNextBtn');if(screen){if(busy)screen.setAttribute('aria-busy','true');else screen.removeAttribute('aria-busy');}if(button){button.disabled=!!busy;button.textContent=busy?'Checking…':wizardNextLabel();}}
@@ -1540,10 +1544,18 @@ let interviewEditReturnId=null,interviewEditReturnMode=null;
 function advanceInterview(q){applyContextMapping();ensureQuestionInPath(q.id);let next=null;if(interviewEditReturnId||interviewEditReturnMode){const end=interviewEditReturnId?questionIndex(interviewEditReturnId):INTERVIEW_QUESTION_REGISTRY.length;next=INTERVIEW_QUESTION_REGISTRY.slice(questionIndex(q.id)+1,end).find(x=>questionEligible(x,state,wizardMeta)&&x.id!=='review'&&!wizardMeta.questionState[x.id]?.answered)?.id||null;if(!next){if(interviewEditReturnMode==='firstcut'){interviewEditReturnId=null;interviewEditReturnMode=null;setAppMode('firstcut');renderFirstCut();return;}next=interviewEditReturnId||'review';interviewEditReturnId=null;interviewEditReturnMode=null;}}if(!next)next=nextSequentialQuestionId(q.id);wizardMeta.currentQuestionId=next;ensureQuestionInPath(next);wizardMeta.pendingWarningIds=[];renderWizardStep();}
 function wizardBack(){endWizardNavigationIntent();const current=INTERVIEW_BY_ID[wizardMeta.currentQuestionId];synchroniseRenderedQuestionControls(current);applyContextMapping();normaliseQuestionPath();const currentIndex=wizardMeta.questionPath.indexOf(wizardMeta.currentQuestionId),targetIndex=currentIndex>0?currentIndex-1:-1;if(targetIndex>=0){wizardMeta.currentQuestionId=wizardMeta.questionPath[targetIndex];wizardStep=targetIndex;wizardMeta.currentStep=wizardStep;wizardMeta.pendingWarningIds=[];renderWizardStep();}}
 function exitWizard(){endWizardNavigationIntent();synchroniseRenderedQuestionControls(INTERVIEW_BY_ID[wizardMeta.currentQuestionId]);if(confirm('Return to the start screen? Your current answers remain available in this browser session.'))setAppMode('landing');}
-function showWizardErrors(errors){const box=$('wizardErrors');box.hidden=false;box.replaceChildren();box.tabIndex=-1;const ul=document.createElement('ul');for(const e of errors){const li=document.createElement('li');li.textContent=e;ul.appendChild(li);}box.appendChild(ul);requestAnimationFrame(()=>{box.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});box.focus();});announce('Please correct the interview answers.');}
+function showWizardErrors(errors){const box=$('wizardErrors');box.hidden=false;box.replaceChildren();box.tabIndex=-1;const ul=document.createElement('ul');for(const e of errors){const li=document.createElement('li');li.textContent=e;ul.appendChild(li);}box.appendChild(ul);requestAnimationFrame(()=>{box.scrollIntoView({block:'center',behavior:mediaMatches('(prefers-reduced-motion: reduce)')?'auto':'smooth'});box.focus();});announce('Please correct the interview answers.');}
 function editQuestion(id,returnTarget=null){if(appMode==='wizard'&&wizardMeta.currentQuestionId!==id)synchroniseRenderedQuestionControls(INTERVIEW_BY_ID[wizardMeta.currentQuestionId]);if(!INTERVIEW_BY_ID[id]||!questionEligible(INTERVIEW_BY_ID[id],state,wizardMeta))return;if(returnTarget==='firstcut'){interviewEditReturnMode='firstcut';interviewEditReturnId=null;}else if(returnTarget){interviewEditReturnId=returnTarget;interviewEditReturnMode=null;}wizardMeta.currentQuestionId=id;ensureQuestionInPath(id);wizardMeta.pendingWarningIds=[];setAppMode('wizard');renderWizardStep();requestAnimationFrame(()=>$('wizardContent')?.querySelector('input,select,button')?.focus());}
 function editReviewGroup(group,returnTarget=null){const q=INTERVIEW_QUESTION_REGISTRY.find(x=>x.reviewGroup===group&&questionEligible(x,state,wizardMeta));if(q)editQuestion(q.id,returnTarget);}
+function naturalList(items){
+  const values=(Array.isArray(items)?items:[]).map(value=>String(value??'').trim()).filter(Boolean);
+  if(values.length===0)return '';
+  if(values.length===1)return values[0];
+  if(values.length===2)return values[0]+' and '+values[1];
+  return values.slice(0,-1).join(', ')+', and '+values[values.length-1];
+}
 function buildTopicSummary(group){
+  try{
   const approx=k=>['approximate','range'].includes(qualityFor(k))?'about ':'',money=k=>approx(k)+formatMoney(n(state[k])),c=wizardMeta.context;let text='';
   if(group==='position')text=c.employmentStatus==='retired'?'You will be '+n(state.currentAge)+' when the plan starts. You have already retired, and the plan runs to age '+n(state.endAge)+'.':'You will be '+n(state.currentAge)+' when the plan starts. You plan to retire at '+n(state.retirementAge)+', and the plan runs to age '+n(state.endAge)+'.';
   if(group==='income'){if(c.employmentStatus==='working')text='You currently earn '+money('baseSalary')+' per year'+(c.hasRegularBonus?' plus a typical bonus of '+money('bonusAnnual'):' and do not usually receive a cash bonus')+'.'+(c.expectsCareerChange?' You expect income to change around '+friendlyMonth(state.careerChangeDate)+'.':'');else if(c.employmentStatus==='retired')text='You have already retired.';else text='You are not currently working'+(c.futureWorkExpected?', but the plan includes paid work from the plan start date.':'. No employment income is included.');}
@@ -1555,6 +1567,7 @@ function buildTopicSummary(group){
   if(group==='events')text=(state.majorFutureCostEnabled?'You included a large one-off cost of '+formatMoney(state.majorFutureCostAmount)+' around '+friendlyMonth(state.majorFutureCostDate)+'. ':'You have not included a large one-off cost. ')+(state.facilityEnabled?'The plan may use limited temporary borrowing if accessible cash runs short.':'The plan will rely only on cash and assets already included, without temporary borrowing.');
   if(group==='assumptions')text=c.assumptionMode==='defaults'?'The tool’s standard planning assumptions will be used for long-term rates.':c.assumptionMode==='review'?'You reviewed the key long-term assumptions that are material to this plan.':'You reviewed all supported long-term assumptions that currently apply.';
   return text?{group,text,updatedAt:new Date().toISOString()}:null;
+  }catch(summaryError){console.error('Topic summary generation failed for group '+group+'; continuing without blocking navigation',summaryError);return null;}
 }
 function bridgeLabel(v){return ({'cash-investments':'using accessible cash and investments','work-longer':'continuing or returning to paid work','property':'selling or changing a property','other':'using another identified source','unknown':'a source that is still to be confirmed'})[v]||'a source that is still to be confirmed';}
 function renderInterviewReview(root){
@@ -1787,9 +1800,9 @@ function exportFirstCutReview(){
 function announce(text){const el=$('entryLiveRegion')||$('calcState');if(el)el.textContent=text;}
 
 
-let state = structuredClone(SCENARIOS.BASE);
+let state = clonePlainData(SCENARIOS.BASE);
 let wizardMeta = createWizardMeta(state,'advanced-planner');
-let scenarioBaselineWizardMeta=structuredClone(wizardMeta);
+let scenarioBaselineWizardMeta=clonePlainData(wizardMeta);
 let appMode='landing',wizardStep=0,firstCutResult=null,firstCutDirty=true,sensitivityResult=null,previousFirstCut=null,firstCutView='compare',firstCutToken=0,firstCutCancelRequested=false;
 let activeView = 'summary';
 let displayBasis = 'real';
@@ -1803,7 +1816,7 @@ let solverDirty = true;
 let remediationResult=null,remediationDirty=true,policySensitivityResult=null,estateResult=null,analysisCancelled=false;
 let recalcTimer = null;
 let currentPreset = 'BASE';
-let scenarioBaseline = structuredClone(SCENARIOS.BASE);
+let scenarioBaseline = clonePlainData(SCENARIOS.BASE);
 let scenarioBaseLabel = SCENARIOS.BASE.scenarioName;
 let scenarioBaseKey = 'BASE';
 let rememberEnabled = false;
@@ -1814,13 +1827,43 @@ let initialCalculationComplete = false;
 const STORAGE_KEY = 'australian_financial_planning_tool_v3_5_0_saved_plan';
 
 /* ------------------------------- Utilities ------------------------------- */
+function clonePlainData(value){
+  if(typeof globalThis!=='undefined'&&typeof globalThis.structuredClone==='function')return globalThis.structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
+}
+function escapeCssIdentifier(value){
+  const text=String(value??'');
+  if(typeof globalThis!=='undefined'&&globalThis.CSS&&typeof globalThis.CSS.escape==='function')return globalThis.CSS.escape(text);
+  return text.replace(/[^A-Za-z0-9_-]/g,ch=>'\\'+ch.codePointAt(0).toString(16)+' ');
+}
+function mediaMatches(query){
+  try{return typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia(query).matches;}catch(_){return false;}
+}
 const $ = id => document.getElementById(id);
 const n = v => Number.isFinite(Number(v)) ? Number(v) : 0;
 const clamp = (v,a,b) => Math.min(b,Math.max(a,n(v)));
 const deepClone = x => JSON.parse(JSON.stringify(x));
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function isDate(value){
+  if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+  const parsed=new Date(value+'T00:00:00Z');
+  return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===value;
+}
+function validateScenarioDates(s){
+  // Fail fast with a clear, diagnosable message if any date reaching the
+  // calculation engine is malformed. This converts a cryptic RangeError deep
+  // in ymd(), and any silent NaN cascade through monthsBetween(), into a single
+  // descriptive error caught by the plan-generation boundary. A malformed date
+  // can bypass the live interview validation via a corrupted import or restore.
+  if(!isDate(String(s&&s.startDate||'')))throw new Error('The '+((typeof F!=='undefined'&&F.startDate&&F.startDate.label)||'plan start date')+' is missing or not a valid calendar date. Please set a valid plan start date in the interview before generating a plan.');
+  if(typeof F==='undefined')return true;
+  for(const key of Object.keys(F)){
+    if(F[key]&&F[key].type==='date'){const v=s?s[key]:undefined;if(v===undefined||v===null||v==='')continue;if(!isDate(String(v)))throw new Error('The '+((F[key].label)||key)+" is not a valid calendar date (received '"+String(v)+"'). Please re-enter it in the interview before generating a plan.");}
+  }
+  return true;
+}
 function parseDate(v){return new Date(String(v||'1970-01-01')+'T00:00:00Z');}
-function ymd(d){return d.toISOString().slice(0,10);}
+function ymd(d){if(!(d instanceof Date)||!Number.isFinite(d.getTime()))throw new Error('An internal date calculation produced an invalid date. This usually means a stored date value is malformed; please re-enter the affected date in the interview.');return d.toISOString().slice(0,10);}
 function addMonths(v,m){const d=parseDate(v);return new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+m,1));}
 function monthsBetween(a,b){const x=parseDate(a),y=parseDate(b);return (y.getUTCFullYear()-x.getUTCFullYear())*12+y.getUTCMonth()-x.getUTCMonth();}
 function sameMonth(a,b){return !!a&&!!b&&monthsBetween(a,b)===0;}
@@ -1973,6 +2016,7 @@ function makeStressState(base,presetKey){
 
 /* ----------------------------- Core plan engine ----------------------------- */
 function runPlan(s,opts={}){
+  validateScenarioDates(s);
   const retirementSpend=opts.retirementSpendAnnual===undefined?n(s.retirementSpendingAnnual):n(opts.retirementSpendAnnual);
   const capitalInjectionAmount=Math.max(0,n(opts.capitalInjectionAmount)),capitalInjectionDate=opts.capitalInjectionDate||null;
   const months=Math.max(12,Math.round((n(s.endAge)-n(s.currentAge))*12));
@@ -2613,7 +2657,7 @@ function wizardProductTests(){
 }
 
 
-function adaptiveInterviewRegressionTests(from=1,to=128){
+function adaptiveInterviewRegressionTests(from=1,to=Infinity){
   const tests=[];let ordinal=0;const test=(name,fn)=>{ordinal++;if(ordinal<from||ordinal>to)return;try{const detail=fn();tests.push({name,ok:true,detail:detail||'Pass'});}catch(e){tests.push({name,ok:false,detail:e.message||String(e)});}};const assert=(c,m)=>{if(!c)throw new Error(m);};
   const saveGlobals=()=>({state,wizardMeta,firstCutResult,firstCutDirty,sensitivityResult,previousFirstCut,currentPreset,advancedDependencyAssessment,solverResult,stressSolverResult,remediationResult,policySensitivityResult,estateResult,displayBasis,wizardStep,rememberEnabled,savedAt});
   const restoreGlobals=g=>{state=g.state;wizardMeta=g.wizardMeta;firstCutResult=g.firstCutResult;firstCutDirty=g.firstCutDirty;sensitivityResult=g.sensitivityResult;previousFirstCut=g.previousFirstCut;currentPreset=g.currentPreset;advancedDependencyAssessment=g.advancedDependencyAssessment;solverResult=g.solverResult;stressSolverResult=g.stressSolverResult;remediationResult=g.remediationResult;policySensitivityResult=g.policySensitivityResult;estateResult=g.estateResult;displayBasis=g.displayBasis;wizardStep=g.wizardStep;rememberEnabled=g.rememberEnabled;savedAt=g.savedAt;};
@@ -2827,6 +2871,24 @@ function adaptiveInterviewRegressionTests(from=1,to=128){
   test('191 Review generation is awaited under the transition lock',()=>{const src=wizardNext.toString();assert(src.includes('await generateFirstCutPlan()'),'Generate plan can escape the transition lock');});
   test('192 Pointer, keyboard and legacy activation establish navigation intent',()=>{const src=document.documentElement.innerHTML;assert(src.includes("event.key==='Enter'||event.key===' '")&&src.includes("touchstart',beginWizardNavigationIntent"),'Navigation intent does not cover keyboard or legacy touch activation');});
   test('193 Navigation intent has an explicit end path',()=>{assert(endWizardNavigationIntent.toString().includes('clearTimeout'),'Navigation intent can remain latched after an action');});
+  test('194 Topic summaries have a defined natural-language list formatter',()=>{assert(typeof naturalList==='function'&&naturalList([])===''&&naturalList(['one'])==='one'&&naturalList(['one','two'])==='one and two'&&naturalList(['one','two','three'])==='one, two, and three','Topic-summary list formatting is unavailable or incorrect');});
+  test('195 Date-range validation has a strict date helper',()=>{assert(typeof isDate==='function'&&isDate('2026-07-01')&&!isDate('2026-02-30')&&!isDate('not-a-date')&&!isDate(null),'Date validation helper is unavailable or accepts invalid dates');});
+  test('196 Critical runtime bindings pass startup preflight',()=>assert(verifyCriticalRuntimeBindings()===true,'Critical runtime dependency preflight failed'));
+  test('197 Plain-data clone helper returns an independent copy',()=>{const source={a:1,nested:{b:2}},copy=clonePlainData(source);copy.nested.b=3;assert(source.nested.b===2&&copy.nested.b===3,'Plain-data clone helper is not independent');});
+  test('198 CSS identifier escaping has a browser-independent fallback',()=>{const escaped=escapeCssIdentifier('warning:id');assert(typeof escaped==='string'&&escaped.length>0&&!escaped.includes(':'),'CSS identifier escaping failed');});
+  test('199 Media-query helper always returns a boolean',()=>assert(typeof mediaMatches('(max-width:700px)')==='boolean','Media-query compatibility helper did not return a boolean'));
+  test('200 Startup failure handler is available',()=>assert(typeof showStartupFailure==='function'&&typeof safeInit==='function','Guarded startup handlers are unavailable'));
+  test('201 Topic summary is isolated so its failure cannot block the transition',()=>{const bt=buildTopicSummary.toString(),cc=commitCurrentQuestion.toString();assert(/try\s*\{/.test(bt)&&/catch\s*\(/.test(bt)&&/return null/.test(bt),'buildTopicSummary is not defensively isolated');assert(/try\s*\{[^]*buildTopicSummary\([^]*\}\s*catch/.test(cc),'commitCurrentQuestion does not guard the summary write on the navigation path');});
+  test('202 A throwing summary helper degrades to a null summary rather than blocking navigation',()=>withScenario(baseScenario(),()=>{const originalFormat=formatMoney;let threw=false,result;try{formatMoney=()=>{throw new Error('simulated helper failure');};try{result=buildTopicSummary('spending');}catch(_){threw=true;}}finally{formatMoney=originalFormat;}assert(!threw&&result===null,'A failing summary helper must yield a null summary, not an exception that blocks Continue');}));
+  test('203 Commit survives a summary failure so Continue is never stranded',()=>withScenario(baseScenario(),()=>{const originalFormat=formatMoney,q=INTERVIEW_QUESTION_REGISTRY.find(x=>x.reviewGroup==='spending')||INTERVIEW_QUESTION_REGISTRY[0];let threw=false;try{formatMoney=()=>{throw new Error('simulated helper failure');};try{commitCurrentQuestion(q);}catch(_){threw=true;}}finally{formatMoney=originalFormat;}assert(!threw,'commitCurrentQuestion must not propagate a cosmetic summary failure onto the navigation path');}));
+  test('204 The understood-so-far card is isolated from the core question render',()=>{const src=renderWizardStep.toString();const guard=/wizardUnderstood[^]*try\s*\{[^]*buildTopicSummary\([^]*\}\s*catch/.test(src);assert(guard,'The cosmetic summary card is not isolated, so a card failure could block the core question render');});
+  test('205 A failing summary card still renders the core question and never strands the step',()=>withScenario(baseScenario(),()=>{const originalFormat=formatMoney;let threw=false;try{formatMoney=()=>{throw new Error('simulated card failure');};try{renderWizardStep();}catch(_){threw=true;}}finally{formatMoney=originalFormat;}const understoodHidden=$('wizardUnderstood')?.hidden!==false,coreRendered=!!$('wizardContent')?.querySelector('section');assert(!threw&&understoodHidden&&coreRendered,'A cosmetic summary-card failure must hide the card yet still render the core question without throwing');}));
+  test('206 Scenario date validation accepts valid dates and rejects malformed ones with a clear message',()=>{assert(validateScenarioDates({startDate:'2026-07-01'})===true,'A valid scenario date set was rejected');let msg='';try{validateScenarioDates({startDate:'not-a-date'});}catch(e){msg=e.message;}assert(/plan start date/i.test(msg)&&/valid/i.test(msg),'A malformed start date did not produce a clear, descriptive validation error');let msg2='';try{validateScenarioDates({startDate:'2026-07-01',careerChangeDate:'13-13-2026'});}catch(e){msg2=e.message;}assert(msg2.length>0&&/valid/i.test(msg2),'A malformed optional date did not produce a clear validation error');});
+  test('207 runPlan fails fast on a malformed date instead of a cryptic RangeError or silent NaN',()=>withScenario(baseScenario(),()=>{let msg='',name='';try{runPlan({...state,startDate:'garbage'});}catch(e){msg=e.message;name=e.name;}assert(msg.length>0&&!/invalid time value/i.test(msg)&&/valid/i.test(msg),'runPlan did not convert a malformed date into a clear, diagnosable error');}));
+  test('208 ymd rejects an invalid date with a descriptive error and formats a valid date correctly',()=>{assert(ymd(new Date(Date.UTC(2026,6,1)))==='2026-07-01','ymd did not format a valid date correctly');let msg='';try{ymd(new Date('nonsense'));}catch(e){msg=e.message;}assert(msg.length>0&&!/invalid time value/i.test(msg),'ymd did not replace the opaque native RangeError with a descriptive message');});
+  test('209 Core numeric helpers degrade cleanly on non-finite and extreme inputs',()=>{assert(n(NaN)===0&&n(Infinity)===0&&n(undefined)===0&&n('x')===0,'n() must clamp non-finite values to zero');assert(Number.isFinite(growthFactor(-5,24))&&growthFactor(-5,24)>0,'growthFactor must stay finite and positive even for an extreme negative rate');assert(Number.isFinite(deflator('2030-01-01',{startDate:'2026-07-01',inflation:0.025})),'deflator must be finite for valid dates');});
+  test('210 A yes/no gate precedes the retirement-income super balance question',()=>withScenario(baseScenario({openingSuperPension:0}),()=>{const q=INTERVIEW_BY_ID['super-balances'];assert(q.contextFields.includes('hasPensionSuper'),'The retirement-income gate is not attached to the super page');wizardMeta.context.hasPensionSuper=false;applyContextMapping();let active=questionActiveFields(q);assert(active.includes('openingSuperAccum')&&!active.includes('openingSuperPension'),'The retirement-income balance question was shown even though the gate answer was No');assert(n(state.openingSuperPension)===0,'A No gate answer did not zero the retirement-income balance');wizardMeta.context.hasPensionSuper=true;applyContextMapping();active=questionActiveFields(q);assert(active.includes('openingSuperPension'),'The retirement-income balance question was hidden even though the gate answer was Yes');}));
+  test('211 An existing retirement-income balance defaults the gate to Yes on import',()=>{const meta=createWizardMeta({...DEFAULTS,openingSuperPension:150000},'imported');assert(meta.context.hasPensionSuper===true,'A positive pension balance did not default the gate to Yes');const meta2=createWizardMeta({...DEFAULTS,openingSuperPension:0},'imported');assert(meta2.context.hasPensionSuper===false,'A zero pension balance did not default the gate to No');});
   return tests;
 }
 
@@ -3025,7 +3087,7 @@ function chartLinePattern(ser,index){return ser.dash!==undefined?ser.dash:['','7
 function chartLegendHtml(series){return '<div class="chart-legend-list" aria-label="Chart legend">'+series.map((ser,i)=>'<span class="chart-legend-item"><span class="chart-legend-key '+(chartLinePattern(ser,i)?'dashed':'')+'" style="--series-colour:'+chartSeriesColour(ser.name,i)+'"></span><span>'+esc(ser.name)+'</span></span>').join('')+'</div>';}
 
 function chartSvg(series,title){
-  const compact=typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(max-width:700px)').matches,w=compact?520:940,h=compact?300:300,pl=compact?58:65,pr=compact?18:25,pt=20,pb=42;const points=series.flatMap(s=>s.values);if(!points.length)return '';
+  const compact=mediaMatches('(max-width:700px)'),w=compact?520:940,h=compact?300:300,pl=compact?58:65,pr=compact?18:25,pt=20,pb=42;const points=series.flatMap(s=>s.values);if(!points.length)return '';
   const vals=points.map(p=>n(p.y)),min=Math.min(0,...vals),max=Math.max(1,...vals),count=Math.max(...series.map(s=>s.values.length));
   const x=i=>pl+(count===1?0:i*(w-pl-pr)/(count-1)),y=v=>h-pb-(v-min)/(max-min||1)*(h-pt-pb),ticks=[0,.25,.5,.75,1].map(q=>min+(max-min)*q),labelCount=compact?5:8;
   const paths=series.map((ser,si)=>{const d=ser.values.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(p.y).toFixed(1)).join(' '),dash=chartLinePattern(ser,si);return '<path class="chart-line" d="'+d+'" stroke="'+chartSeriesColour(ser.name,si)+'" '+(dash?'stroke-dasharray="'+dash+'"':'')+'/>';}).join('');
@@ -3163,13 +3225,20 @@ async function runRegressionSuiteAsync(){
     // release catalogue is deliberately chunked so the browser can repaint,
     // announce progress and accept cancellation/navigation between groups.
     out.push(...internalRegressionTests());
+    const releaseStart=out.length;
     show('Retained engine regressions complete. Running v3.5 release checks...');
     await new Promise(resolve=>setTimeout(resolve,0));
-    for(let start=1;start<=128;start+=10){
-      const end=Math.min(128,start+9);
-      out.push(...adaptiveInterviewRegressionTests(start,end));
-      show('Running v3.5 release checks '+start+'-'+end+' of 128...');
+    // Chunked so the browser can repaint and accept cancellation between
+    // groups. The loop advances until a chunk returns fewer than the requested
+    // size, so every defined test runs and newly added tests are always
+    // executed without maintaining a hardcoded upper bound.
+    const CHUNK=10;
+    for(let start=1;;start+=CHUNK){
+      const chunk=adaptiveInterviewRegressionTests(start,start+CHUNK-1);
+      out.push(...chunk);
+      show('Running v3.5 release checks... '+(out.length-releaseStart)+' completed');
       await new Promise(resolve=>setTimeout(resolve,0));
+      if(chunk.length<CHUNK)break;
     }
     log.textContent=out.map(x=>(x.ok?'PASS':'FAIL')+' | '+x.name+' | '+x.detail).join('\n');
   }catch(error){
@@ -3364,12 +3433,42 @@ function setupResize(){
   res.addEventListener('pointerdown',e=>{if(innerWidth<=900)return;dragging=true;res.setPointerCapture(e.pointerId);set(e.clientX);});res.addEventListener('pointermove',e=>{if(dragging)set(e.clientX);});res.addEventListener('pointerup',e=>{dragging=false;try{res.releasePointerCapture(e.pointerId);}catch(_){}});res.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();const current=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sidebar'))||390;document.documentElement.style.setProperty('--sidebar',clamp(current+(e.key==='ArrowRight'?24:-24),300,620)+'px');});
 }
 
-let chartCompactMode=typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(max-width:700px)').matches;
-function refreshChartsAfterBreakpointChange(){const compact=window.matchMedia&&window.matchMedia('(max-width:700px)').matches;if(compact===chartCompactMode)return;chartCompactMode=compact;if(appMode==='firstcut'&&firstCutResult)renderFirstCut();else if(appMode==='advanced'&&result)renderView(activeView);}
+let chartCompactMode=mediaMatches('(max-width:700px)');
+function refreshChartsAfterBreakpointChange(){const compact=mediaMatches('(max-width:700px)');if(compact===chartCompactMode)return;chartCompactMode=compact;if(appMode==='firstcut'&&firstCutResult)renderFirstCut();else if(appMode==='advanced'&&result)renderView(activeView);}
 
 function setupTabs(){
   const tabs=[...document.querySelectorAll('.tab')];tabs.forEach((b,i)=>{b.id='tab_'+b.dataset.view;b.setAttribute('aria-controls','view');b.addEventListener('click',()=>renderView(b.dataset.view));b.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();let next=i;if(e.key==='ArrowLeft')next=(i-1+tabs.length)%tabs.length;if(e.key==='ArrowRight')next=(i+1)%tabs.length;if(e.key==='Home')next=0;if(e.key==='End')next=tabs.length-1;tabs[next].focus();renderView(tabs[next].dataset.view);});});
 }
+function verifyCriticalRuntimeBindings(){
+  const bindings=[
+    ['clonePlainData',typeof clonePlainData],['escapeCssIdentifier',typeof escapeCssIdentifier],['mediaMatches',typeof mediaMatches],
+    ['naturalList',typeof naturalList],['isDate',typeof isDate],['buildTopicSummary',typeof buildTopicSummary],
+    ['synchroniseRenderedQuestionControls',typeof synchroniseRenderedQuestionControls],['validateQuestion',typeof validateQuestion],
+    ['commitCurrentQuestion',typeof commitCurrentQuestion],['wizardNext',typeof wizardNext],['advanceInterview',typeof advanceInterview],
+    ['renderWizardStep',typeof renderWizardStep],['questionEligible',typeof questionEligible],['eligibleQuestionIds',typeof eligibleQuestionIds],
+    ['normaliseQuestionPath',typeof normaliseQuestionPath],['applyContextMapping',typeof applyContextMapping],
+    ['wizardParseValue',typeof wizardParseValue],['questionSurfaceSignature',typeof questionSurfaceSignature],
+    ['recomputeInterviewState',typeof recomputeInterviewState],['generateFirstCutPlan',typeof generateFirstCutPlan],
+    ['runPlan',typeof runPlan],['renderFirstCut',typeof renderFirstCut],['renderView',typeof renderView],
+    ['requestRecalculate',typeof requestRecalculate],['deepClone',typeof deepClone]
+  ];
+  const missing=bindings.filter(([,type])=>type!=='function').map(([name])=>name);
+  if(missing.length)throw new Error('Missing runtime dependencies: '+missing.join(', '));
+  return true;
+}
+function showStartupFailure(error){
+  try{
+    console.error('Application startup failure',error);
+    document.body.classList.remove('app-loading');
+    const host=document.getElementById('bootScreen')||document.body;
+    const card=document.createElement('section');card.setAttribute('role','alert');card.style.cssText='max-width:760px;margin:32px auto;padding:20px;border:1px solid #c2413b;border-radius:12px;background:#fff5f4;color:#7f1d1d;font:16px/1.5 system-ui,sans-serif';
+    const title=document.createElement('h1');title.style.cssText='margin:0 0 8px;font-size:1.25rem';title.textContent='The financial planning tool could not start';
+    const detail=document.createElement('p');detail.style.margin='0';detail.textContent='A required application component did not load. Replace the deployed file with the latest complete release and refresh the page.';
+    const technical=document.createElement('p');technical.style.cssText='margin:10px 0 0;font-size:.85rem;overflow-wrap:anywhere';technical.textContent='Technical detail: '+(error&&error.message?error.message:String(error));
+    card.append(title,detail,technical);if(host.id==='bootScreen')host.replaceChildren(card);else host.prepend(card);
+  }catch(fallbackError){console.error('Startup failure display failed',fallbackError);}
+}
+function safeInit(){try{verifyCriticalRuntimeBindings();init();}catch(error){showStartupFailure(error);}}
 function init(){
   $('toolVersion').textContent='v'+META.version+' | schema '+META.schemaVersion+' | built '+META.buildDate;
   const scenario=$('scenarioSelect');Object.entries(SCENARIOS).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.textContent=v.scenarioName;scenario.appendChild(o);});const custom=document.createElement('option');custom.value='CUSTOM';custom.textContent='Custom scenario';scenario.appendChild(custom);
@@ -3393,7 +3492,7 @@ function init(){
   setupTabs();renderInputs();setupResize();updateHeaderMeta();updateSaveStatus();updateDecisionContext();window.addEventListener('resize',updateStickyOffset);window.addEventListener('resize',refreshChartsAfterBreakpointChange);if(window.ResizeObserver)new ResizeObserver(updateStickyOffset).observe($('pageHeader'));
   revealApplication();requestRecalculate({solve:false});
 }
-document.addEventListener('DOMContentLoaded',init);
+document.addEventListener('DOMContentLoaded',safeInit);
 </script>
 </body>
 </html>
